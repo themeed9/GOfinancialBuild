@@ -284,6 +284,44 @@ function buildTypographyVars(typo) {
   return vars;
 }
 
+// ─── Build spacing CSS variables ──────────────────────────────
+
+function buildSpacingVars(spacing) {
+  const vars = [];
+
+  vars.push({ varName: '--spacing-unit', value: `${spacing.unit}px` });
+
+  for (const [name, value] of Object.entries(spacing.scale)) {
+    vars.push({ varName: `--spacing-${name}`, value: `${value}px` });
+  }
+
+  return vars;
+}
+
+// ─── Build border-radius CSS variables ────────────────────────
+
+function buildBorderRadiusVars(borderRadius) {
+  const vars = [];
+
+  for (const [name, value] of Object.entries(borderRadius)) {
+    vars.push({ varName: `--radius-${name}`, value: `${value}px` });
+  }
+
+  return vars;
+}
+
+// ─── Build elevation CSS variables ────────────────────────────
+
+function buildElevationVars(elevation) {
+  const vars = [];
+
+  for (const [name, value] of Object.entries(elevation)) {
+    vars.push({ varName: `--elevation-${name}`, value: value });
+  }
+
+  return vars;
+}
+
 // ─── Assemble CSS output ──────────────────────────────────────
 
 function formatVarsBlock(vars, indent = '  ') {
@@ -293,11 +331,17 @@ function formatVarsBlock(vars, indent = '  ') {
 const lightRoleVars = buildColorRoleVars(colorData.color.role.light, colorData);
 const darkRoleVars = buildColorRoleVars(colorData.color.role.dark, colorData);
 const typographyVars = buildTypographyVars(designData.typography);
+const spacingVars = designData.spacing ? buildSpacingVars(designData.spacing) : [];
+const borderRadiusVars = designData.borderRadius ? buildBorderRadiusVars(designData.borderRadius) : [];
+const elevationVars = designData.elevation ? buildElevationVars(designData.elevation) : [];
 
 console.log('\n📊 Token summary:');
 console.log(`   Light color roles : ${lightRoleVars.length} variables`);
 console.log(`   Dark color roles  : ${darkRoleVars.length} variables`);
 console.log(`   Typography        : ${typographyVars.length} variables`);
+console.log(`   Spacing           : ${spacingVars.length} variables`);
+console.log(`   Border Radius     : ${borderRadiusVars.length} variables`);
+console.log(`   Elevation         : ${elevationVars.length} variables`);
 
 const css = `/*
  * ═══════════════════════════════════════════════════════════════
@@ -319,6 +363,15 @@ ${formatVarsBlock(lightRoleVars)}
 
   /* ── Typography ── */
 ${formatVarsBlock(typographyVars)}
+
+  /* ── Spacing ── */
+${formatVarsBlock(spacingVars)}
+
+  /* ── Border Radius ── */
+${formatVarsBlock(borderRadiusVars)}
+
+  /* ── Elevation ── */
+${formatVarsBlock(elevationVars)}
 }
 
 
@@ -340,5 +393,7 @@ ${formatVarsBlock(darkRoleVars, '    ')}
 
 fs.writeFileSync(OUTPUT_CSS_PATH, css, 'utf-8');
 
+const totalVars = lightRoleVars.length + darkRoleVars.length + typographyVars.length + spacingVars.length + borderRadiusVars.length + elevationVars.length;
 console.log(`\n✅ CSS written to: ${OUTPUT_CSS_PATH}`);
-console.log(`   Total variables: ${lightRoleVars.length + darkRoleVars.length + typographyVars.length}`);
+console.log(`   Total variables: ${totalVars}`);
+

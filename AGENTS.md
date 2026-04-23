@@ -66,7 +66,7 @@ Build a **fast, lightweight, globally accessible financial habit tool** that use
 
 ### Styling
 - CSS Modules
-- CSS Variables (`tokens/colors.css`)
+- CSS Variables (`tokens/design-tokens.css`)
 
 ### State
 - React (`useState`, `useReducer`)
