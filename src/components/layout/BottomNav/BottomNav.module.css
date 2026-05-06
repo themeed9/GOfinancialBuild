@@ -1,0 +1,73 @@
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 50;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-outline-variant);
+  padding: var(--spacing-sm, 12px) var(--spacing-md, 16px) calc(env(safe-area-inset-bottom, 0px) + var(--spacing-sm, 12px));
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  gap: 4px;
+  padding: 0;
+  transition: color 0.2s ease;
+  flex: 1;
+}
+
+.navItem.active, .navItem:hover {
+  color: var(--color-primary);
+}
+
+.addIcon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: var(--radius-lg, 16px);
+  font-size: var(--headline-medium-font-size-px, 24px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.navItem:active .addIcon {
+  transform: scale(0.95);
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: color 0.2s ease;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 500;
+}
