@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { User } from '../../types';
-import styles from './Dashboard.module.css';
+import styles from './ProfileModal.module.css';
 import { MdCameraAlt, MdEdit, MdClose, MdEmail, MdPerson, MdMoney, MdPublic, MdCalendarToday } from 'react-icons/md';
 
 interface ProfileModalProps {
@@ -24,9 +24,17 @@ export default function ProfileModal({ user, onClose, onUpdateUser }: ProfileMod
     return () => document.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image must be smaller than 2MB');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file');
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64 = reader.result as string;
@@ -35,36 +43,37 @@ export default function ProfileModal({ user, onClose, onUpdateUser }: ProfileMod
       };
       reader.readAsDataURL(file);
     }
-  };
+  }, [onUpdateUser]);
 
-  const handleSaveUsername = () => {
-    if (username.trim() && username !== user.username) {
-      onUpdateUser({ username: username.trim() });
+  const handleSaveUsername = useCallback(() => {
+    const trimmed = sanitizeUsername(username);
+    if (trimmed && trimmed !== user.username) {
+      onUpdateUser({ username: trimmed });
       setIsEditingName(false);
     }
-  };
+  }, [username, user.username, onUpdateUser]);
 
   return (
-    <div className={styles.profileOverlay} onClick={onClose}>
-      <div className={styles.profileModalFull} ref={modalRef} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.profileHeaderFull}>
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} ref={modalRef} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <h3>Profile</h3>
-          <div style={{ flex: 1 }}></div>
-          <button className={styles.closeButtonFull} onClick={onClose}>
+          <div className={styles.spacer}></div>
+          <button className={styles.closeButton} onClick={onClose} aria-label="Close profile">
             <MdClose size={24} />
           </button>
         </div>
 
-        <div className={styles.profileImageSectionFull}>
-          <div className={styles.profileImageWrapper}>
+        <div className={styles.imageSection}>
+          <div className={styles.imageWrapper}>
             {previewImage ? (
-              <img src={previewImage} alt="Profile" className={styles.profileImageFull} />
+              <img src={previewImage} alt="Profile" className={styles.profileImage} />
             ) : (
-              <div className={styles.profileImagePlaceholderFull}>
+              <div className={styles.imagePlaceholder}>
                 <MdPerson size={48} color="var(--color-on-secondary-container)" />
               </div>
             )}
-            <button 
+            <button
               className={styles.cameraButton}
               onClick={() => fileInputRef.current?.click()}
               aria-label="Upload photo"
@@ -72,28 +81,29 @@ export default function ProfileModal({ user, onClose, onUpdateUser }: ProfileMod
               <MdCameraAlt size={20} />
             </button>
           </div>
-          <input 
+          <input
             ref={fileInputRef}
-            type="file" 
-            accept="image/*" 
+            type="file"
+            accept="image/*"
             onChange={handleImageUpload}
             style={{ display: 'none' }}
           />
         </div>
 
-        <div className={styles.profileNameSection}>
+        <div className={styles.nameSection}>
           {isEditingName ? (
             <div className={styles.editNameRow}>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className={styles.usernameInputFull}
+                className={styles.usernameInput}
                 maxLength={20}
                 autoFocus
+                aria-label="Username"
               />
-              <button 
-                className={styles.saveButtonFull}
+              <button
+                className={styles.saveButton}
                 onClick={handleSaveUsername}
                 disabled={!username.trim() || username === user.username}
               >
@@ -101,9 +111,9 @@ export default function ProfileModal({ user, onClose, onUpdateUser }: ProfileMod
               </button>
             </div>
           ) : (
-            <div className={styles.nameDisplayRow}>
-              <h4 className={styles.userNameFull}>{user.username}</h4>
-              <button 
+            <div className={styles.nameDisplay}>
+              <h4 className={styles.userName}>{user.username}</h4>
+              <button
                 className={styles.editIconButton}
                 onClick={() => setIsEditingName(true)}
                 aria-label="Edit username"
@@ -114,45 +124,45 @@ export default function ProfileModal({ user, onClose, onUpdateUser }: ProfileMod
           )}
         </div>
 
-        <div className={styles.profileFieldsFull}>
+        <div className={styles.fields}>
           <div className={styles.readOnlyContainer}>
             <div className={styles.readOnlyField}>
-              <div className={styles.fieldIconFull}><MdPerson size={20} /></div>
-              <div className={styles.fieldContentFull}>
-                <span className={styles.fieldLabelFull}>Full Name</span>
-                <span className={styles.fieldValueFull}>{user.fullName || 'Not set'}</span>
+              <div className={styles.fieldIcon}><MdPerson size={20} /></div>
+              <div className={styles.fieldContent}>
+                <span className={styles.fieldLabel}>Full Name</span>
+                <span className={styles.fieldValue}>{user.fullName || 'Not set'}</span>
               </div>
             </div>
 
             <div className={styles.readOnlyField}>
-              <div className={styles.fieldIconFull}><MdEmail size={20} /></div>
-              <div className={styles.fieldContentFull}>
-                <span className={styles.fieldLabelFull}>Email</span>
-                <span className={styles.fieldValueFull}>{user.email || 'Not set'}</span>
+              <div className={styles.fieldIcon}><MdEmail size={20} /></div>
+              <div className={styles.fieldContent}>
+                <span className={styles.fieldLabel}>Email</span>
+                <span className={styles.fieldValue}>{user.email || 'Not set'}</span>
               </div>
             </div>
 
             <div className={styles.readOnlyField}>
-              <div className={styles.fieldIconFull}><MdMoney size={20} /></div>
-              <div className={styles.fieldContentFull}>
-                <span className={styles.fieldLabelFull}>Currency</span>
-                <span className={styles.fieldValueFull}>{user.currency}</span>
+              <div className={styles.fieldIcon}><MdMoney size={20} /></div>
+              <div className={styles.fieldContent}>
+                <span className={styles.fieldLabel}>Currency</span>
+                <span className={styles.fieldValue}>{user.currency}</span>
               </div>
             </div>
 
             <div className={styles.readOnlyField}>
-              <div className={styles.fieldIconFull}><MdPublic size={20} /></div>
-              <div className={styles.fieldContentFull}>
-                <span className={styles.fieldLabelFull}>Locale</span>
-                <span className={styles.fieldValueFull}>{user.locale}</span>
+              <div className={styles.fieldIcon}><MdPublic size={20} /></div>
+              <div className={styles.fieldContent}>
+                <span className={styles.fieldLabel}>Locale</span>
+                <span className={styles.fieldValue}>{user.locale}</span>
               </div>
             </div>
 
             <div className={styles.readOnlyField}>
-              <div className={styles.fieldIconFull}><MdCalendarToday size={20} /></div>
-              <div className={styles.fieldContentFull}>
-                <span className={styles.fieldLabelFull}>Member since</span>
-                <span className={styles.fieldValueFull}>
+              <div className={styles.fieldIcon}><MdCalendarToday size={20} /></div>
+              <div className={styles.fieldContent}>
+                <span className={styles.fieldLabel}>Member since</span>
+                <span className={styles.fieldValue}>
                   {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
@@ -162,4 +172,11 @@ export default function ProfileModal({ user, onClose, onUpdateUser }: ProfileMod
       </div>
     </div>
   );
+}
+
+function sanitizeUsername(input: string): string {
+  return input
+    .replace(/[<>]/g, '')
+    .trim()
+    .slice(0, 20);
 }

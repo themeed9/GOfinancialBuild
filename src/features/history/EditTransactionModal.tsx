@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Transaction, Category } from '../../types';
 import styles from './TransactionList.module.css';
 import { MdClose, MdDelete, MdExpandMore } from 'react-icons/md';
@@ -11,17 +11,19 @@ interface EditTransactionModalProps {
   onDelete: (id: string) => void;
 }
 
-export default function EditTransactionModal({ 
-  transaction, 
-  categories, 
-  onClose, 
-  onSave, 
-  onDelete 
+export default function EditTransactionModal({
+  transaction,
+  categories,
+  onClose,
+  onSave,
+  onDelete
 }: EditTransactionModalProps) {
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [categoryId, setCategoryId] = useState(transaction.categoryId);
   const [note, setNote] = useState(transaction.note);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const categoryRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,55 +37,75 @@ export default function EditTransactionModal({
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const selectedCategory = categories.find(c => c.id === categoryId) || categories[0];
-
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (showConfirmation) {
+          setShowConfirmation(false);
+        } else {
+          onClose();
+        }
+      }
     };
     document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);
-  }, [onClose]);
+  }, [onClose, showConfirmation]);
 
-  const handleSave = () => {
+  const selectedCategory = categories.find(c => c.id === categoryId) || categories[0];
+
+  const handleSave = useCallback(() => {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) return;
-    
+
+    if (!note.trim()) {
+      setDescriptionError(true);
+      return;
+    }
+
     onSave(transaction.id, {
       amount: numAmount,
       categoryId,
-      note,
+      note: sanitizeInput(note),
       updatedAt: Date.now(),
     });
     onClose();
-  };
+  }, [amount, categoryId, note, transaction.id, onSave, onClose]);
 
-  const handleDelete = () => {
-    if (window.confirm('Delete this transaction?')) {
-      onDelete(transaction.id);
-      onClose();
-    }
-  };
+  const handleDeleteClick = useCallback(() => {
+    setShowConfirmation(true);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    onDelete(transaction.id);
+    setShowConfirmation(false);
+    onClose();
+  }, [transaction.id, onDelete, onClose]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setShowConfirmation(false);
+  }, []);
 
   return (
+    <>
     <div className={styles.editOverlay} onClick={onClose}>
-      <div 
-        className={styles.editModal} 
+      <div
+        className={styles.editModal}
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.editHeader}>
           <h3>Edit Expense</h3>
-          <div style={{ flex: 1 }}></div>
-          <button className={styles.closeButtonFull} onClick={onClose}>
+          <div className={styles.spacer}></div>
+          <button className={styles.closeButtonFull} onClick={onClose} aria-label="Close edit modal">
             <MdClose size={24} />
           </button>
         </div>
 
         <div className={styles.editForm}>
           <div className={styles.editField}>
-            <label className={styles.editLabel}>Amount</label>
+            <label className={styles.editLabel} htmlFor="edit-amount">Amount</label>
             <input
+              id="edit-amount"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -97,23 +119,25 @@ export default function EditTransactionModal({
           <div className={styles.editField}>
             <label className={styles.editLabel}>Category</label>
             <div className={styles.categorySelectorContainer} ref={categoryRef}>
-              <button 
+              <button
                 className={styles.categorySelectorBox}
                 onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                 type="button"
+                aria-expanded={isCategoryOpen}
+                aria-haspopup="listbox"
               >
                 <div className={styles.categoryCurrent}>
                   <span className={styles.categoryIcon}>{selectedCategory.icon}</span>
                   <span className={styles.categoryName}>{selectedCategory.name}</span>
                 </div>
-                <MdExpandMore 
-                  size={24} 
-                  className={`${styles.categoryChevron} ${isCategoryOpen ? styles.chevronOpen : ''}`} 
+                <MdExpandMore
+                  size={24}
+                  className={`${styles.categoryChevron} ${isCategoryOpen ? styles.chevronOpen : ''}`}
                 />
               </button>
-              
+
               {isCategoryOpen && (
-                <div className={styles.categoryDropdown}>
+                <div className={styles.categoryDropdown} role="listbox">
                   {categories.map(c => (
                     <button
                       key={c.id}
@@ -123,6 +147,8 @@ export default function EditTransactionModal({
                         setIsCategoryOpen(false);
                       }}
                       type="button"
+                      role="option"
+                      aria-selected={c.id === categoryId}
                     >
                       <span className={styles.categoryIcon}>{c.icon}</span>
                       <span className={styles.categoryName}>{c.name}</span>
@@ -134,24 +160,32 @@ export default function EditTransactionModal({
           </div>
 
           <div className={styles.editField}>
-            <label className={styles.editLabel}>Note (optional)</label>
-            <input
-              type="text"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className={styles.editInput}
-              placeholder="Add a note"
-              maxLength={50}
-            />
+            <label className={styles.editLabel} htmlFor="edit-note">Description</label>
+            <div className={styles.editInputWrapper}>
+              <input
+                id="edit-note"
+                type="text"
+                value={note}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                  if (descriptionError) setDescriptionError(false);
+                }}
+                className={`${styles.editInput} ${descriptionError ? styles.editInputError : ''}`}
+                placeholder="Add a description"
+                maxLength={50}
+                autoComplete="off"
+              />
+            </div>
+            {descriptionError && <span className={styles.editInlineError}>Enter description</span>}
           </div>
         </div>
 
         <div className={styles.editActions}>
-          <button className={styles.deleteButton} onClick={handleDelete}>
+          <button className={styles.deleteButton} onClick={handleDeleteClick}>
             <MdDelete size={18} />
             Delete
           </button>
-          <button 
+          <button
             className={styles.saveButtonFull}
             onClick={handleSave}
             disabled={!amount || parseFloat(amount) <= 0}
@@ -161,5 +195,34 @@ export default function EditTransactionModal({
         </div>
       </div>
     </div>
+
+    {showConfirmation && (
+      <div className={styles.confirmationOverlay} onClick={handleDeleteCancel}>
+        <div className={styles.confirmationDialog} onClick={(e) => e.stopPropagation()}>
+          <h3 className={styles.confirmationTitle}>Delete Transaction</h3>
+          <p className={styles.confirmationMessage}>
+            Are you sure you want to delete this transaction? This action cannot be undone.
+          </p>
+          <div className={styles.confirmationActions}>
+            <button className={styles.confirmationCancel} onClick={handleDeleteCancel}>
+              Cancel
+            </button>
+            <button className={styles.confirmationConfirm} onClick={handleDeleteConfirm}>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
+}
+
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .slice(0, 50);
 }

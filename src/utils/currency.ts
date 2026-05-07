@@ -1,36 +1,40 @@
-import { EXCHANGE_RATES } from '../data/exchangeRates';
+import { getCurrencies, getCurrencyISOCode, type CurrencyOption } from '../data/currencies';
 
 export function convertCurrency(
   amount: number,
-  fromCurrency: string,
-  toCurrency: string
+  fromCurrency: CurrencyOption | string,
+  toCurrency: CurrencyOption | string
 ): number {
-  if (fromCurrency === toCurrency) {
+  const fromCode = typeof fromCurrency === 'string' ? fromCurrency : getCurrencyISOCode(fromCurrency);
+  const toCode = typeof toCurrency === 'string' ? toCurrency : getCurrencyISOCode(toCurrency);
+
+  if (fromCode === toCode) {
     return amount;
   }
 
-  const fromRate = EXCHANGE_RATES[fromCurrency];
-  const toRate = EXCHANGE_RATES[toCurrency];
+  const currencies = getCurrencies();
+  const from = currencies.find(c => getCurrencyISOCode(c) === fromCode);
+  const to = currencies.find(c => getCurrencyISOCode(c) === toCode);
 
-  if (!fromRate || !toRate) {
-    console.warn(`Exchange rate not found for ${fromCurrency} or ${toCurrency}`);
+  if (!from || !to) {
+    console.warn(`Exchange rate not found for ${fromCode} or ${toCode}`);
     return amount;
   }
 
-  const amountInUSD = amount * fromRate.rateToUSD;
-  const convertedAmount = amountInUSD / toRate.rateToUSD;
+  const amountInUSD = amount * from.rateToUSD;
+  const convertedAmount = amountInUSD / to.rateToUSD;
 
   return convertedAmount;
 }
 
 export function getCurrencySymbol(currencyCode: string): string {
-  const rate = EXCHANGE_RATES[currencyCode];
-  return rate?.symbol || '$';
+  const currencies = getCurrencies();
+  const currency = currencies.find(c => getCurrencyISOCode(c) === currencyCode);
+  return currency?.symbol || '$';
 }
 
 export function getCurrencyCodeFromSymbol(symbol: string): string {
-  const entry = Object.entries(EXCHANGE_RATES).find(
-    ([_, data]) => data.symbol === symbol
-  );
-  return entry ? entry[0] : 'USD';
+  const currencies = getCurrencies();
+  const entry = currencies.find(c => c.symbol === symbol);
+  return entry ? getCurrencyISOCode(entry) : 'USD';
 }

@@ -28,11 +28,11 @@ export function useTransactions() {
       await storage.deleteTransaction(id);
     } catch {
       setTransactions(prev => {
-        const original = transactions.find(t => t.id === id);
-        return original ? [...prev, original] : prev;
+        const tx = prev.find(t => t.id === id);
+        return tx ? [...prev, tx] : prev;
       });
     }
-  }, [transactions]);
+  }, []);
 
   const updateTransaction = useCallback(async (transaction: Transaction) => {
     setTransactions(prev => prev.map(t => t.id === transaction.id ? transaction : t));

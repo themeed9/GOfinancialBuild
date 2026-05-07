@@ -1,11 +1,12 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import type { Transaction, Category } from '../../types';
+import type { CurrencyOption } from '../../data/currencies';
 import styles from './AddTransaction.module.css';
-import { getCurrencyCodeFromSymbol } from '../../utils/currency';
+import { getCurrencyISOCode } from '../../data/currencies';
 
 interface AddTransactionProps {
   categories: Category[];
-  currencySymbol?: string;
+  currency: CurrencyOption;
   onSave: (transaction: Transaction) => void;
   onCancel: () => void;
 }
@@ -14,32 +15,17 @@ function generateId(): string {
   return `txn_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export default function AddTransaction({ categories, onSave, onCancel }: AddTransactionProps) {
+export default function AddTransaction({ categories, currency, onSave, onCancel }: AddTransactionProps) {
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
-  const [currencySymbol, setCurrencySymbol] = useState(() => {
-    const saved = localStorage.getItem('gofinancial_currency');
-    if (saved) {
-      const data = JSON.parse(saved);
-      return data.symbol || '$';
-    }
-    return '$';
-  });
-
-  // Update currency symbol when modal opens (in case user changed country)
-  useEffect(() => {
-    const saved = localStorage.getItem('gofinancial_currency');
-    if (saved) {
-      const data = JSON.parse(saved);
-      setCurrencySymbol(data.symbol || '$');
-    }
-  }, []);
+  const [descriptionError, setDescriptionError] = useState(false);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
+    setDescriptionError(false);
 
     const numAmount = parseFloat(amount);
     if (!amount || isNaN(numAmount)) {
@@ -54,14 +40,18 @@ export default function AddTransaction({ categories, onSave, onCancel }: AddTran
       setError('Please select a category');
       return;
     }
+    if (!note.trim()) {
+      setDescriptionError(true);
+      return;
+    }
 
-  const originalCurrency = getCurrencyCodeFromSymbol(currencySymbol);
+  const originalCurrency = getCurrencyISOCode(currency);
 
     const transaction: Transaction = {
       id: generateId(),
       amount: numAmount,
       categoryId,
-      note: note.trim(),
+      note: sanitizeInput(note.trim()),
       timestamp: Date.now(),
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -87,14 +77,17 @@ export default function AddTransaction({ categories, onSave, onCancel }: AddTran
         </div>
 
         <div className={styles.amountContainer}>
-          <span className={styles.currencySymbol}>{currencySymbol}</span>
+          <span className={styles.currencySymbol}>{currency.symbol}</span>
           <input
             id="amount"
             type="number"
             inputMode="decimal"
             className={styles.amountInput}
             value={amount}
-            onChange={e => setAmount(e.target.value)}
+            onChange={e => {
+              setAmount(e.target.value);
+              if (error) setError('');
+            }}
             placeholder="0"
             step="0.01"
             min="0"
@@ -128,16 +121,23 @@ export default function AddTransaction({ categories, onSave, onCancel }: AddTran
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="note" className={styles.label}>Note (optional)</label>
-          <input
-            id="note"
-            type="text"
-            className={styles.input}
-            value={note}
-            onChange={e => setNote(e.target.value)}
-            placeholder="What was this for?"
-            maxLength={100}
-          />
+          <label htmlFor="note" className={styles.label}>Description</label>
+          <div className={styles.inputWrapper}>
+            <input
+              id="note"
+              type="text"
+              className={`${styles.input} ${descriptionError ? styles.inputError : ''}`}
+              value={note}
+              onChange={e => {
+                setNote(e.target.value);
+                if (descriptionError) setDescriptionError(false);
+              }}
+              placeholder="e.g. Lunch at restaurant, Bus fare to work"
+              maxLength={100}
+              autoComplete="off"
+            />
+          </div>
+          {descriptionError && <span className={styles.inlineError}>Enter description</span>}
         </div>
 
         {error && (
@@ -152,4 +152,13 @@ export default function AddTransaction({ categories, onSave, onCancel }: AddTran
       </form>
     </div>
   );
+}
+
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .slice(0, 100);
 }

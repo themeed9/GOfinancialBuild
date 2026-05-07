@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { User } from '../../types';
-import styles from './Dashboard.module.css';
+import styles from './SettingsModal.module.css';
 import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity } from 'react-icons/md';
 
 interface SettingsModalProps {
@@ -11,15 +11,16 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<'settings' | 'terms' | 'privacy'>('settings');
-  const appVersion = '0.0.0';
+  const appVersion = import.meta.env.VITE_APP_VERSION || '0.0.0';
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = user.theme === 'dark' ? 'light' : 'dark';
     onUpdateUser({ theme: newTheme });
     document.documentElement.setAttribute('data-theme', newTheme);
-  };
+    localStorage.setItem('gofinancial_theme', newTheme);
+  }, [user.theme, onUpdateUser]);
 
-  const exportData = () => {
+  const exportData = useCallback(() => {
     const data = {
       user,
       exportDate: new Date().toISOString(),
@@ -32,42 +33,45 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
     a.download = `gofinancial-export-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-  };
+  }, [user, appVersion]);
 
   return (
-    <div className={styles.settingsOverlay} onClick={onClose}>
-      <div className={styles.settingsModal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.settingsHeader}>
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.header}>
           <h3>Settings</h3>
-          <div style={{ flex: 1 }}></div>
-          <button className={styles.closeButtonFull} onClick={onClose}>
+          <div className={styles.spacer}></div>
+          <button className={styles.closeButton} onClick={onClose} aria-label="Close settings">
             <MdClose size={24} />
           </button>
         </div>
 
-        <div className={styles.settingsTabs}>
-          <button 
+        <div className={styles.tabs}>
+          <button
             className={`${styles.tabButton} ${activeTab === 'settings' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('settings')}
+            aria-label="Settings tab"
           >
             Settings
           </button>
-          <button 
+          <button
             className={`${styles.tabButton} ${activeTab === 'terms' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('terms')}
+            aria-label="Terms tab"
           >
             Terms
           </button>
-          <button 
+          <button
             className={`${styles.tabButton} ${activeTab === 'privacy' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('privacy')}
+            aria-label="Privacy tab"
           >
             Privacy
           </button>
         </div>
 
         {activeTab === 'settings' && (
-          <div className={styles.settingsContent}>
+          <div className={styles.content}>
             <div className={styles.settingItem}>
               <div className={styles.settingLeft}>
                 {user.theme === 'dark' ? <MdDarkMode size={20} /> : <MdLightMode size={20} />}
@@ -78,7 +82,7 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
                   </span>
                 </div>
               </div>
-              <button 
+              <button
                 className={styles.toggleButton}
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
@@ -128,7 +132,7 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
           <div className={styles.legalContent}>
             <h4>Terms and Conditions</h4>
             <p><strong>Last updated:</strong> May 5, 2026</p>
-            
+
             <h5>1. Acceptance of Terms</h5>
             <p>By accessing and using GOfinancial ("the App"), you accept and agree to be bound by the terms and provision of this agreement.</p>
 
@@ -168,7 +172,7 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
           <div className={styles.legalContent}>
             <h4>Privacy Policy</h4>
             <p><strong>Last updated:</strong> May 5, 2026</p>
-            
+
             <h5>1. Information We Collect</h5>
             <p>We collect the following information:</p>
             <ul>

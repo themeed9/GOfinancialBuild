@@ -15,7 +15,7 @@ export default function BottomNav({ currentTab, onChangeTab, onAddTap }: BottomN
       <div className={styles.container}>
         <button
           type="button"
-          className={styles.navItem}
+          className={styles.addButton}
           onClick={onAddTap}
           aria-label="Add expense"
         >
@@ -23,35 +23,37 @@ export default function BottomNav({ currentTab, onChangeTab, onAddTap }: BottomN
           <span className={styles.label}>Add</span>
         </button>
 
-        <button
-          type="button"
-          className={`${styles.navItem} ${currentTab === 'dashboard' ? styles.active : ''}`}
-          onClick={() => onChangeTab('dashboard')}
-          aria-label="Dashboard"
-        >
-          <span className={styles.icon}><MdDashboard /></span>
-          <span className={styles.label}>Dashboard</span>
-        </button>
+        <div className={styles.group}>
+          <button
+            type="button"
+            className={`${styles.navItem} ${currentTab === 'dashboard' ? styles.active : ''}`}
+            onClick={() => onChangeTab('dashboard')}
+            aria-label="Dashboard"
+          >
+            <span className={styles.icon}><MdDashboard /></span>
+            <span className={styles.label}>Dashboard</span>
+          </button>
 
-        <button
-          type="button"
-          className={`${styles.navItem} ${currentTab === 'history' ? styles.active : ''}`}
-          onClick={() => onChangeTab('history')}
-          aria-label="History"
-        >
-          <span className={styles.icon}><MdHistory /></span>
-          <span className={styles.label}>History</span>
-        </button>
+          <button
+            type="button"
+            className={`${styles.navItem} ${currentTab === 'history' ? styles.active : ''}`}
+            onClick={() => onChangeTab('history')}
+            aria-label="History"
+          >
+            <span className={styles.icon}><MdHistory /></span>
+            <span className={styles.label}>History</span>
+          </button>
 
-        <button
-          type="button"
-          className={`${styles.navItem} ${currentTab === 'insight' ? styles.active : ''}`}
-          onClick={() => onChangeTab('insight')}
-          aria-label="Insight"
-        >
-          <span className={styles.icon}><MdInsights /></span>
-          <span className={styles.label}>Insight</span>
-        </button>
+          <button
+            type="button"
+            className={`${styles.navItem} ${currentTab === 'insight' ? styles.active : ''}`}
+            onClick={() => onChangeTab('insight')}
+            aria-label="Insight"
+          >
+            <span className={styles.icon}><MdInsights /></span>
+            <span className={styles.label}>Insight</span>
+          </button>
+        </div>
       </div>
     </nav>
   );

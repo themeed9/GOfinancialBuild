@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTransactions } from './hooks/useTransactions';
+import { useCurrency } from './hooks/useCurrency';
 import { defaultCategories } from './data/categories';
 import Dashboard from './features/dashboard/Dashboard';
 import AddTransaction from './features/add-transaction/AddTransaction';
@@ -9,20 +10,11 @@ import './App.css';
 
 function App() {
   const { transactions, loading, addTransaction, deleteTransaction, updateTransaction } = useTransactions();
+  const { currency, setCurrency } = useCurrency();
   const [showAdd, setShowAdd] = useState(false);
   const [currentTab, setCurrentTab] = useState<Tab>('dashboard');
-  const [currencySymbol, setCurrencySymbol] = useState(() => {
-    const saved = localStorage.getItem('gofinancial_currency');
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        return data.symbol || '₦';
-      } catch {
-        return '₦';
-      }
-    }
-    return '₦';
-  });
+
+  const [historySyncDate, setHistorySyncDate] = useState<Date | null>(null);
 
   function handleSave(transaction: typeof transactions[0]) {
     addTransaction(transaction);
@@ -41,32 +33,41 @@ function App() {
     <div className="app">
       {currentTab === 'dashboard' && (
         <>
-          <Dashboard 
-            transactions={transactions} 
-            onCurrencyChange={setCurrencySymbol} 
+          <Dashboard
+            transactions={transactions}
+            currency={currency}
+            onCurrencyChange={setCurrency}
           />
           <TransactionList
             transactions={transactions}
             categories={defaultCategories}
             onDelete={deleteTransaction}
             onUpdate={updateTransaction}
-            currencySymbol={currencySymbol}
+            currency={currency}
+            viewMode="dashboard"
+            onSwitchToHistory={(date) => {
+              setHistorySyncDate(date);
+              setCurrentTab('history');
+            }}
           />
         </>
       )}
 
       {currentTab === 'history' && (
         <TransactionList
+          key={historySyncDate ? historySyncDate.getTime() : 'history'}
           transactions={transactions}
           categories={defaultCategories}
           onDelete={deleteTransaction}
           onUpdate={updateTransaction}
-          currencySymbol={currencySymbol}
+          currency={currency}
+          viewMode="history"
+          syncDate={historySyncDate}
         />
       )}
 
       {currentTab === 'insight' && (
-        <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+        <div className="insights-placeholder">
           <h2>Insights Coming Soon</h2>
         </div>
       )}
@@ -74,6 +75,7 @@ function App() {
       {showAdd && (
         <AddTransaction
           categories={defaultCategories}
+          currency={currency}
           onSave={handleSave}
           onCancel={() => setShowAdd(false)}
         />
