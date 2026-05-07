@@ -10,10 +10,15 @@
 }
 
 .historyTitle {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 400;
   color: var(--color-on-surface-variant);
-  margin: 0 0 var(--spacing-md, 16px) 0;
+  margin: 0 0 var(--spacing-sm, 12px) 0;
+  opacity: 0.8;
+}
+
+.dashboardMode {
+  margin: 0;
 }
 
 .titleHistory {
@@ -673,3 +678,27 @@
     font-weight: 600;
     min-height: 44px;
   }
+
+:global([dir="rtl"]) .itemAmountContainer {
+  align-items: flex-start;
+}
+
+:global([dir="rtl"]) .convertedFrom {
+  text-align: left;
+  align-self: flex-start;
+}
+
+:global([dir="rtl"]) .editInlineError {
+  text-align: right;
+  padding-left: 0;
+  padding-right: 4px;
+}
+
+:global([dir="rtl"]) .categoryOption {
+  text-align: right;
+}
+
+:global([dir="rtl"]) .legalContent ul {
+  padding-left: 0;
+  padding-right: 20px;
+}

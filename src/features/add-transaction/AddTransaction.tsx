@@ -3,6 +3,7 @@ import type { Transaction, Category } from '../../types';
 import type { CurrencyOption } from '../../data/currencies';
 import styles from './AddTransaction.module.css';
 import { getCurrencyISOCode } from '../../data/currencies';
+import { useI18n } from '../../hooks/useI18n';
 
 interface AddTransactionProps {
   categories: Category[];
@@ -16,6 +17,7 @@ function generateId(): string {
 }
 
 export default function AddTransaction({ categories, currency, onSave, onCancel }: AddTransactionProps) {
+  const { strings } = useI18n();
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
@@ -29,15 +31,15 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
 
     const numAmount = parseFloat(amount);
     if (!amount || isNaN(numAmount)) {
-      setError('Please enter a valid amount');
+      setError(strings.error_valid_amount);
       return;
     }
     if (numAmount <= 0) {
-      setError('Amount must be greater than zero');
+      setError(strings.error_amount_positive);
       return;
     }
     if (!categoryId) {
-      setError('Please select a category');
+      setError(strings.error_select_category);
       return;
     }
     if (!note.trim()) {
@@ -65,7 +67,7 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
     <div className={styles.overlay} role="dialog" aria-label="Add transaction">
       <form className={styles.sheet} onSubmit={handleSubmit}>
         <div className={styles.header}>
-          <h2 className={styles.title}>New Expense</h2>
+          <h2 className={styles.title}>{strings.new_expense}</h2>
           <button
             type="button"
             className={styles.close}
@@ -97,7 +99,7 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
         </div>
 
         <div className={styles.field}>
-          <span className={styles.label} id="category-label">Category</span>
+          <span className={styles.label} id="category-label">{strings.category}</span>
           <div
             className={styles.categories}
             role="radiogroup"
@@ -121,7 +123,7 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="note" className={styles.label}>Description</label>
+          <label htmlFor="note" className={styles.label}>{strings.description}</label>
           <div className={styles.inputWrapper}>
             <input
               id="note"
@@ -132,12 +134,12 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
                 setNote(e.target.value);
                 if (descriptionError) setDescriptionError(false);
               }}
-              placeholder="e.g. Lunch at restaurant, Bus fare to work"
+              placeholder={strings.description_placeholder}
               maxLength={100}
               autoComplete="off"
             />
           </div>
-          {descriptionError && <span className={styles.inlineError}>Enter description</span>}
+          {descriptionError && <span className={styles.inlineError}>{strings.error_enter_description}</span>}
         </div>
 
         {error && (
@@ -147,7 +149,7 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
         )}
 
         <button type="submit" className={styles.submit}>
-          Save Transaction
+          {strings.save_transaction}
         </button>
       </form>
     </div>

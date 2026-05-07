@@ -218,3 +218,8 @@
   color: var(--color-on-surface);
   font-weight: 500;
 }
+
+:global([dir="rtl"]) .cameraButton {
+  right: auto;
+  left: 0;
+}

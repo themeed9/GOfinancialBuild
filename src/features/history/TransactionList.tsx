@@ -6,6 +6,7 @@ import EditTransactionModal from './EditTransactionModal';
 import styles from './TransactionList.module.css';
 import { MdEdit, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { convertCurrency, getCurrencySymbol } from '../../utils/currency';
+import { useI18n } from '../../hooks/useI18n';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -43,6 +44,7 @@ function formatShortDate(timestamp: number): string {
 }
 
 export default function TransactionList({ transactions, categories, onDelete, onUpdate, currency, viewMode = 'history', onSwitchToHistory, syncDate }: TransactionListProps) {
+  const { strings } = useI18n();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [selectedDate, setSelectedDate] = useState(syncDate || new Date());
   const [showCalendar, setShowCalendar] = useState(false);
@@ -179,58 +181,61 @@ export default function TransactionList({ transactions, categories, onDelete, on
     return days;
   }, [calendarDate]);
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthNames = [strings.month_jan, strings.month_feb, strings.month_mar, strings.month_apr, strings.month_may, strings.month_jun,
+    strings.month_jul, strings.month_aug, strings.month_sep, strings.month_oct, strings.month_nov, strings.month_dec];
 
   const handleEdit = useCallback((transaction: Transaction) => {
     setEditingTransaction(transaction);
   }, []);
 
   return (
-      <section className={styles.listContainer} aria-label="Transaction history">
-        <h2 className={`${styles.historyTitle} ${viewMode === 'history' ? styles.titleHistory : ''}`}>{viewMode === 'dashboard' ? "Today's Expenses" : 'Expense History'}</h2>
-        {showLimitNotice && <div className={styles.limitNotice}>Go to History to view older expenses</div>}
-        <div className={styles.listHeader}>
-          <div className={styles.dateGroup}>
-            <button
-              className={styles.chevronLeft}
-              onClick={goToPreviousDay}
-              aria-label="Previous day"
-            >
-              <MdChevronLeft size={16} />
-            </button>
-            <button className={styles.dateText} onClick={handleDateClick}>
-              {dateStr}
-            </button>
-            <button
-              className={`${styles.chevronRight} ${isToday ? styles.disabled : ''}`}
-              onClick={goToNextDay}
-              disabled={isToday}
-              aria-label="Next day"
-            >
-              <MdChevronRight size={16} />
-            </button>
+      <section className={`${styles.listContainer} ${viewMode === 'dashboard' ? styles.dashboardMode : ''}`} aria-label="Transaction history">
+        <h2 className={`${styles.historyTitle} ${viewMode === 'history' ? styles.titleHistory : ''}`}>{viewMode === 'dashboard' ? strings.today_expenses : strings.expense_history}</h2>
+        {showLimitNotice && <div className={styles.limitNotice}>{strings.limit_notice}</div>}
+        
+        {viewMode === 'history' && (
+          <div className={styles.listHeader}>
+            <div className={styles.dateGroup}>
+              <button
+                className={styles.chevronLeft}
+                onClick={goToPreviousDay}
+                aria-label="Previous day"
+              >
+                <MdChevronLeft size={16} />
+              </button>
+              <button className={styles.dateText} onClick={handleDateClick}>
+                {dateStr}
+              </button>
+              <button
+                className={`${styles.chevronRight} ${isToday ? styles.disabled : ''}`}
+                onClick={goToNextDay}
+                disabled={isToday}
+                aria-label="Next day"
+              >
+                <MdChevronRight size={16} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
       {showCalendar && (
         <div className={styles.calendarOverlay} onClick={() => setShowCalendar(false)}>
           <div className={styles.calendarModal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.calendarHeader}>
-              <button onClick={handlePrevYear} className={styles.calendarNav} aria-label="Previous year">«</button>
-              <button onClick={handlePrevMonth} className={styles.calendarNav} aria-label="Previous month">‹</button>
+            <button onClick={handlePrevYear} className={styles.calendarNav} aria-label={strings.calendar_prev_year}>«</button>
+            <button onClick={handlePrevMonth} className={styles.calendarNav} aria-label={strings.calendar_prev_month}>‹</button>
               <span className={styles.calendarTitle}>{monthNames[calendarDate.getMonth()]} {calendarDate.getFullYear()}</span>
-              <button onClick={handleNextMonth} className={styles.calendarNav} disabled={new Date(calendarDate.getFullYear(), calendarDate.getMonth() +1, 1) > today} aria-label="Next month">›</button>
-              <button onClick={handleNextYear} className={styles.calendarNav} disabled={new Date(calendarDate.getFullYear() +1, calendarDate.getMonth(), 1) > today} aria-label="Next year">»</button>
+            <button onClick={handleNextMonth} className={styles.calendarNav} disabled={new Date(calendarDate.getFullYear(), calendarDate.getMonth() +1, 1) > today} aria-label={strings.calendar_next_month}>›</button>
+            <button onClick={handleNextYear} className={styles.calendarNav} disabled={new Date(calendarDate.getFullYear() +1, calendarDate.getMonth(), 1) > today} aria-label={strings.calendar_next_year}>»</button>
             </div>
             <div className={styles.calendarGrid}>
-              <span className={styles.calendarDay}>Su</span>
-              <span className={styles.calendarDay}>Mo</span>
-              <span className={styles.calendarDay}>Tu</span>
-              <span className={styles.calendarDay}>We</span>
-              <span className={styles.calendarDay}>Th</span>
-              <span className={styles.calendarDay}>Fr</span>
-              <span className={styles.calendarDay}>Sa</span>
+              <span className={styles.calendarDay}>{strings.day_su}</span>
+              <span className={styles.calendarDay}>{strings.day_mo}</span>
+              <span className={styles.calendarDay}>{strings.day_tu}</span>
+              <span className={styles.calendarDay}>{strings.day_we}</span>
+              <span className={styles.calendarDay}>{strings.day_th}</span>
+              <span className={styles.calendarDay}>{strings.day_fr}</span>
+              <span className={styles.calendarDay}>{strings.day_sa}</span>
               {calendarDays.map((day, idx) => (
                 day ? (
                   <button
@@ -250,7 +255,7 @@ export default function TransactionList({ transactions, categories, onDelete, on
         )}
 
         {sorted.length === 0 ? (
-          <p className={styles.emptyDay}>No entry for this day</p>
+          <p className={styles.emptyDay}>{viewMode === 'dashboard' ? strings.no_entry_day : strings.no_entry_date}</p>
         ) : (
           <>
             <div className={styles.list}>

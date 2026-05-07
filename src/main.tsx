@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import ErrorBoundary from './components/ErrorBoundary.tsx'
 import { AuthProvider } from './contexts/auth.provider.tsx'
+import { LanguageProvider } from './contexts/language.provider.tsx'
 import './index.css'
 import App from './App.tsx'
 
@@ -16,19 +17,32 @@ function initTheme() {
     // ignore
   }
 
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.setAttribute('data-theme', 'dark');
+  document.documentElement.setAttribute('data-theme', 'light');
+}
+
+function initLanguage() {
+  try {
+    const saved = localStorage.getItem('gofinancial_language');
+    if (saved && ['ar', 'he'].includes(saved)) {
+      document.documentElement.dir = 'rtl';
+      document.documentElement.lang = saved;
+    }
+  } catch {
+    // ignore
   }
 }
 
 initTheme();
+initLanguage();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   </StrictMode>,
 )

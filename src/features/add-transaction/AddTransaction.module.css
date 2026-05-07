@@ -225,3 +225,9 @@
   transform: translateY(0) scale(0.98);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
+:global([dir="rtl"]) .inlineError {
+  text-align: right;
+  padding-left: 0;
+  padding-right: 4px;
+}
