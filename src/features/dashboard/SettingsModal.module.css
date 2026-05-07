@@ -247,3 +247,115 @@
   margin-top: 2px;
   flex-shrink: 0;
 }
+
+.languageSelectorContainer {
+  position: relative;
+  width: 140px;
+}
+
+.languageSelectorBox {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 8px;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  color: var(--color-on-surface);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.languageSelectorBox:hover {
+  border-color: var(--color-primary);
+}
+
+.languageChevron {
+  color: var(--color-on-surface-variant);
+  transition: transform 0.3s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.languageDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-width: 180px;
+}
+
+.languageDropdown::-webkit-scrollbar {
+  display: none;
+}
+
+.languageOption {
+  width: 100%;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+  min-height: 44px;
+  gap: 12px;
+}
+
+.languageOption:hover {
+  background: var(--color-surface-container-high);
+}
+
+.languageOptionSelected {
+  background: var(--color-primary-container);
+}
+
+.languageOptionName {
+  font-size: 14px;
+  color: var(--color-on-surface);
+  font-weight: 500;
+}
+
+.languageOptionCode {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+}
+
+:global([dir="rtl"]) .settingLeft {
+  flex-direction: row-reverse;
+}
+
+:global([dir="rtl"]) .languageOption {
+  text-align: right;
+}
+
+:global([dir="rtl"]) .toggleThumb {
+  left: auto;
+  right: 2px;
+}
+
+:global([dir="rtl"]) .toggleActive .toggleThumb {
+  transform: translateX(-20px);
+}
+
+:global([dir="rtl"]) .legalContent ul {
+  padding-left: 0;
+  padding-right: 20px;
+}

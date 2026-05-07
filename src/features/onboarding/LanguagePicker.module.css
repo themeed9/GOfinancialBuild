@@ -1,0 +1,216 @@
+.container {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.topContent {
+  padding: var(--spacing-xl, 24px);
+  text-align: center;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-xl, 24px);
+  padding: var(--spacing-xl, 24px);
+}
+
+.selectorWrapper {
+  position: relative;
+  width: fit-content;
+}
+
+.selector {
+  width: fit-content;
+  min-height: 52px;
+  padding: 0 var(--spacing-md, 16px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--color-surface-container-low);
+  border: 1.5px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg, 12px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-on-surface);
+  font-size: 15px;
+}
+
+.selector:hover {
+  border-color: var(--color-primary);
+}
+
+.selector:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-container);
+}
+
+.placeholder {
+  color: var(--color-on-surface-variant);
+  opacity: 0.7;
+  font-weight: 400;
+  padding-right: 4px;
+}
+
+.selectedRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 12px);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.chevron {
+  color: var(--color-on-surface-variant);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.flagImage {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--color-outline-variant);
+  display: block;
+}
+
+.flagFallback {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 600;
+  background: var(--color-surface-container-low);
+  border: 1.5px solid var(--color-outline-variant);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg, 12px);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  animation: slideUpDropdown 0.2s ease-out;
+}
+
+@keyframes slideUpDropdown {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown::-webkit-scrollbar {
+  display: none;
+}
+
+.dropdownItem {
+  width: 100%;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
+  min-height: 44px;
+  gap: var(--spacing-sm, 12px);
+  color: var(--color-on-surface);
+  font-size: 14px;
+}
+
+:global([dir="rtl"]) .dropdownItem {
+  text-align: right;
+}
+
+.dropdownItem:hover {
+  background: var(--color-surface-container-high);
+}
+
+.dropdownItemSelected {
+  background: var(--color-primary-container);
+}
+
+.optionLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 12px);
+}
+
+.continueBtn {
+  width: fit-content;
+  min-width: 140px;
+  min-height: 48px;
+  padding: 0 var(--spacing-xl, 32px);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.continueBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.continueBtn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.continueBtnDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.continueBtnDisabled:hover {
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}

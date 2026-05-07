@@ -7,6 +7,7 @@ import SettingsModal from './SettingsModal';
 import styles from './Dashboard.module.css';
 import { MdExpandMore, MdPerson } from 'react-icons/md';
 import { convertCurrency, getCurrencySymbol } from '../../utils/currency';
+import { useI18n } from '../../hooks/useI18n';
 
 interface DashboardProps {
   transactions: Transaction[];
@@ -15,6 +16,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ transactions, currency, onCurrencyChange }: DashboardProps) {
+  const { strings } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showProfile, setShowProfile] = useState(false);
@@ -148,7 +150,7 @@ export default function Dashboard({ transactions, currency, onCurrencyChange }: 
           )}
         </div>
 
-        <span className={styles.balanceLabel}>Total amount spent today</span>
+        <span className={styles.balanceLabel}>{strings.total_spent_today}</span>
         <div className={styles.balanceAmount}>
           <span className={styles.currencyCode}>{currency.symbol}</span>
           <span className={styles.wholeAmount}>{whole}</span>
@@ -156,7 +158,7 @@ export default function Dashboard({ transactions, currency, onCurrencyChange }: 
         </div>
         {hasMixedCurrencies && (
           <span className={styles.convertedLabel} aria-label={`Converted from ${originalCurrencies.join(', ')}`}>
-            converted from {originalCurrencies.join(', ')}
+            {strings.converted_from} {originalCurrencies.join(', ')}
           </span>
         )}
       </div>

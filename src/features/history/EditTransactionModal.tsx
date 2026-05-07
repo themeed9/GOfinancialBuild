@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Transaction, Category } from '../../types';
 import styles from './TransactionList.module.css';
 import { MdClose, MdDelete, MdExpandMore } from 'react-icons/md';
+import { useI18n } from '../../hooks/useI18n';
 
 interface EditTransactionModalProps {
   transaction: Transaction;
@@ -18,6 +19,7 @@ export default function EditTransactionModal({
   onSave,
   onDelete
 }: EditTransactionModalProps) {
+  const { strings } = useI18n();
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [categoryId, setCategoryId] = useState(transaction.categoryId);
   const [note, setNote] = useState(transaction.note);
@@ -94,7 +96,7 @@ export default function EditTransactionModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.editHeader}>
-          <h3>Edit Expense</h3>
+          <h3>{strings.edit_expense}</h3>
           <div className={styles.spacer}></div>
           <button className={styles.closeButtonFull} onClick={onClose} aria-label="Close edit modal">
             <MdClose size={24} />
@@ -103,7 +105,7 @@ export default function EditTransactionModal({
 
         <div className={styles.editForm}>
           <div className={styles.editField}>
-            <label className={styles.editLabel} htmlFor="edit-amount">Amount</label>
+            <label className={styles.editLabel} htmlFor="edit-amount">{strings.amount}</label>
             <input
               id="edit-amount"
               type="number"
@@ -117,7 +119,7 @@ export default function EditTransactionModal({
           </div>
 
           <div className={styles.editField}>
-            <label className={styles.editLabel}>Category</label>
+            <label className={styles.editLabel}>{strings.category}</label>
             <div className={styles.categorySelectorContainer} ref={categoryRef}>
               <button
                 className={styles.categorySelectorBox}
@@ -160,7 +162,7 @@ export default function EditTransactionModal({
           </div>
 
           <div className={styles.editField}>
-            <label className={styles.editLabel} htmlFor="edit-note">Description</label>
+            <label className={styles.editLabel} htmlFor="edit-note">{strings.description}</label>
             <div className={styles.editInputWrapper}>
               <input
                 id="edit-note"
@@ -171,26 +173,26 @@ export default function EditTransactionModal({
                   if (descriptionError) setDescriptionError(false);
                 }}
                 className={`${styles.editInput} ${descriptionError ? styles.editInputError : ''}`}
-                placeholder="Add a description"
+                placeholder={strings.description_placeholder}
                 maxLength={50}
                 autoComplete="off"
               />
             </div>
-            {descriptionError && <span className={styles.editInlineError}>Enter description</span>}
+            {descriptionError && <span className={styles.editInlineError}>{strings.error_enter_description}</span>}
           </div>
         </div>
 
         <div className={styles.editActions}>
           <button className={styles.deleteButton} onClick={handleDeleteClick}>
             <MdDelete size={18} />
-            Delete
+            {strings.delete}
           </button>
           <button
             className={styles.saveButtonFull}
             onClick={handleSave}
             disabled={!amount || parseFloat(amount) <= 0}
           >
-            Save Changes
+            {strings.save_changes}
           </button>
         </div>
       </div>
@@ -199,16 +201,16 @@ export default function EditTransactionModal({
     {showConfirmation && (
       <div className={styles.confirmationOverlay} onClick={handleDeleteCancel}>
         <div className={styles.confirmationDialog} onClick={(e) => e.stopPropagation()}>
-          <h3 className={styles.confirmationTitle}>Delete Transaction</h3>
+          <h3 className={styles.confirmationTitle}>{strings.delete_transaction_title}</h3>
           <p className={styles.confirmationMessage}>
-            Are you sure you want to delete this transaction? This action cannot be undone.
+            {strings.delete_confirm_msg}
           </p>
           <div className={styles.confirmationActions}>
             <button className={styles.confirmationCancel} onClick={handleDeleteCancel}>
-              Cancel
+              {strings.cancel}
             </button>
             <button className={styles.confirmationConfirm} onClick={handleDeleteConfirm}>
-              Delete
+              {strings.delete}
             </button>
           </div>
         </div>

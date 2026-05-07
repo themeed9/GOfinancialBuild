@@ -1,7 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { User } from '../../types';
 import styles from './SettingsModal.module.css';
-import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity } from 'react-icons/md';
+import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity, MdLanguage, MdExpandMore } from 'react-icons/md';
+import { useLanguage } from '../../hooks/useLanguage';
+import { useI18n } from '../../hooks/useI18n';
 
 interface SettingsModalProps {
   user: User;
@@ -10,8 +12,22 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsModalProps) {
+  const { strings } = useI18n();
+  const { language, setLanguage, languages } = useLanguage();
   const [activeTab, setActiveTab] = useState<'settings' | 'terms' | 'privacy'>('settings');
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const languageRef = useRef<HTMLDivElement | null>(null);
   const appVersion = import.meta.env.VITE_APP_VERSION || '0.0.0';
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (languageRef.current && !languageRef.current.contains(e.target as Node)) {
+        setIsLanguageOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   const toggleTheme = useCallback(() => {
     const newTheme = user.theme === 'dark' ? 'light' : 'dark';
@@ -39,7 +55,7 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h3>Settings</h3>
+          <h3>{strings.settings_title}</h3>
           <div className={styles.spacer}></div>
           <button className={styles.closeButton} onClick={onClose} aria-label="Close settings">
             <MdClose size={24} />
@@ -50,23 +66,23 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
           <button
             className={`${styles.tabButton} ${activeTab === 'settings' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('settings')}
-            aria-label="Settings tab"
+            aria-label={strings.settings_tab}
           >
-            Settings
+            {strings.settings_tab}
           </button>
           <button
             className={`${styles.tabButton} ${activeTab === 'terms' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('terms')}
-            aria-label="Terms tab"
+            aria-label={strings.terms_tab}
           >
-            Terms
+            {strings.terms_tab}
           </button>
           <button
             className={`${styles.tabButton} ${activeTab === 'privacy' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('privacy')}
-            aria-label="Privacy tab"
+            aria-label={strings.privacy_tab}
           >
-            Privacy
+            {strings.privacy_tab}
           </button>
         </div>
 
@@ -74,11 +90,59 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
           <div className={styles.content}>
             <div className={styles.settingItem}>
               <div className={styles.settingLeft}>
+                <MdLanguage size={20} />
+                <div>
+                  <span className={styles.settingLabel}>{strings.language}</span>
+                  <span className={styles.settingHint}>{strings.language_hint}</span>
+                </div>
+              </div>
+              <div className={styles.languageSelectorContainer} ref={languageRef}>
+                <button
+                  className={styles.languageSelectorBox}
+                  onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+                  type="button"
+                  aria-expanded={isLanguageOpen}
+                  aria-haspopup="listbox"
+                >
+                  <span className={styles.languageCurrent}>
+                    {languages.find(l => l.code === language)?.nativeName || 'English'}
+                  </span>
+                  <MdExpandMore
+                    size={20}
+                    className={`${styles.languageChevron} ${isLanguageOpen ? styles.chevronOpen : ''}`}
+                  />
+                </button>
+
+                {isLanguageOpen && (
+                  <div className={styles.languageDropdown} role="listbox">
+                    {languages.map(l => (
+                      <button
+                        key={l.code}
+                        className={`${styles.languageOption} ${l.code === language ? styles.languageOptionSelected : ''}`}
+                        onClick={() => {
+                          setLanguage(l.code);
+                          setIsLanguageOpen(false);
+                        }}
+                        type="button"
+                        role="option"
+                        aria-selected={l.code === language}
+                      >
+                        <span className={styles.languageOptionName}>{l.nativeName}</span>
+                        <span className={styles.languageOptionCode}>{l.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.settingItem}>
+              <div className={styles.settingLeft}>
                 {user.theme === 'dark' ? <MdDarkMode size={20} /> : <MdLightMode size={20} />}
                 <div>
-                  <span className={styles.settingLabel}>Dark Mode</span>
+                  <span className={styles.settingLabel}>{strings.dark_mode}</span>
                   <span className={styles.settingHint}>
-                    {user.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                    {user.theme === 'dark' ? strings.dark_mode_hint_on : strings.dark_mode_hint_off}
                   </span>
                 </div>
               </div>
@@ -97,7 +161,7 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
               <div className={styles.settingLeft}>
                 <MdInfo size={20} />
                 <div>
-                  <span className={styles.settingLabel}>About GOfinancial</span>
+                  <span className={styles.settingLabel}>{strings.about_app}</span>
                   <span className={styles.settingHint}>Version {appVersion}</span>
                 </div>
               </div>
@@ -107,12 +171,12 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
               <div className={styles.settingLeft}>
                 <MdDownload size={20} />
                 <div>
-                  <span className={styles.settingLabel}>Export Data</span>
-                  <span className={styles.settingHint}>Download your financial data</span>
+                  <span className={styles.settingLabel}>{strings.export_data}</span>
+                  <span className={styles.settingHint}>{strings.export_data_hint}</span>
                 </div>
               </div>
               <button className={styles.exportButton} onClick={exportData}>
-                Export
+                {strings.export_button}
               </button>
             </div>
 
@@ -120,8 +184,8 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
               <div className={styles.settingLeft}>
                 <MdGavel size={20} />
                 <div>
-                  <span className={styles.settingLabel}>Legal</span>
-                  <span className={styles.settingHint}>Terms & Privacy below</span>
+                  <span className={styles.settingLabel}>{strings.legal}</span>
+                  <span className={styles.settingHint}>{strings.legal_hint}</span>
                 </div>
               </div>
             </div>

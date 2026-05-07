@@ -224,3 +224,12 @@
     margin-top: 6px;
     letter-spacing: 0.02em;
   }
+
+:global([dir="rtl"]) .profilePill {
+  padding: 4px 4px 4px 16px;
+}
+
+:global([dir="rtl"]) .dropdown {
+  left: 0;
+  right: 0;
+}
