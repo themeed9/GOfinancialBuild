@@ -1,4 +1,5 @@
-import type { User, SessionToken } from '../types/auth';
+import type { User } from '../types';
+import type { SessionToken } from '../types/auth';
 
 // Base API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.gofinancial.app/v1';

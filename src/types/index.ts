@@ -30,4 +30,5 @@ export interface User {
   locale: string;
   theme: 'light' | 'dark';
   createdAt: number;
+  name?: string;
 }

@@ -1,0 +1,247 @@
+@import '../../styles/animations.css';
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.modal {
+  background: var(--color-surface);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  z-index: 101;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  padding: 8px 24px calc(40px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  margin: 0 auto;
+}
+
+/* Drag handle */
+.handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-outline-variant);
+  margin: 12px auto 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-on-surface-variant);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+
+.closeButton:hover {
+  background: var(--color-surface-container-high);
+}
+
+/* Amount input */
+.amountSection {
+  margin-bottom: 20px;
+}
+
+.amountLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.amountInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  background: var(--color-surface-container-low);
+  border: 1.5px solid var(--color-outline-variant);
+  border-radius: 14px;
+  transition: border-color 0.2s;
+}
+
+.amountInputWrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.currencySymbol {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+  flex-shrink: 0;
+}
+
+.amountInput {
+  flex: 1;
+  padding: 16px 0;
+  border: none;
+  background: transparent;
+  color: var(--color-on-surface);
+  font-size: 28px;
+  font-weight: 700;
+  outline: none;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.amountInput::placeholder {
+  color: var(--color-on-surface-variant);
+  opacity: 0.4;
+}
+
+.amountInput::-webkit-outer-spin-button,
+.amountInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Period selector */
+.periodSection {
+  margin-bottom: 20px;
+}
+
+.periodLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.periodGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.periodBtn {
+  min-height: 48px;
+  border: 1.5px solid var(--color-outline-variant);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.periodBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.periodBtnActive {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-color: var(--color-primary);
+}
+
+.periodBtnHint {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+/* Error */
+.errorText {
+  font-size: 13px;
+  color: var(--color-error);
+  margin: 6px 0 0;
+  text-align: center;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.saveBtn {
+  width: 100%;
+  min-height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.saveBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.saveBtn:active {
+  transform: none;
+  opacity: 1;
+}
+
+.saveBtnDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.saveBtnDisabled:hover {
+  transform: none;
+  opacity: 0.45;
+}
+
+.clearBtn {
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--color-error);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.clearBtn:hover {
+  background: rgba(220, 38, 38, 0.06);
+}

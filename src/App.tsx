@@ -2,16 +2,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useTransactions } from './hooks/useTransactions';
 import { useCurrency } from './hooks/useCurrency';
+import { useBudget } from './hooks/useBudget';
 import { defaultCategories } from './data/categories';
 import Dashboard from './features/dashboard/Dashboard';
 import AddTransaction from './features/add-transaction/AddTransaction';
 import TransactionList from './features/history/TransactionList';
+import Insights from './features/insights/Insights';
 import BottomNav, { type Tab } from './components/layout/BottomNav/BottomNav';
+import OfflineBanner from './components/OfflineBanner';
 import LoginScreen from './features/auth/LoginScreen';
 import RegisterScreen from './features/auth/RegisterScreen';
 import SplashScreen from './features/onboarding/SplashScreen';
 import LanguagePicker from './features/onboarding/LanguagePicker';
 import Onboarding from './features/onboarding/Onboarding';
+import BudgetSetup from './features/onboarding/BudgetSetup';
+import type { BudgetPeriod } from './types/budget';
 import './App.css';
 
 type AuthView = 'login' | 'register';
@@ -45,16 +50,25 @@ function App() {
   const { isAuthenticated, isLoading } = useAuth();
   const { transactions, loading, addTransaction, deleteTransaction, updateTransaction } = useTransactions();
   const { currency, setCurrency } = useCurrency();
+  const { budget, setBudget, clearBudget } = useBudget();
   const [showAdd, setShowAdd] = useState(false);
   const [currentTab, setCurrentTab] = useState<Tab>('dashboard');
   const [historySyncDate, setHistorySyncDate] = useState<Date | null>(null);
-  const [firstRun, setFirstRun] = useState<'splash' | 'language' | 'onboarding' | 'done'>(
+  const [firstRun, setFirstRun] = useState<'splash' | 'language' | 'onboarding' | 'budget' | 'done'>(
     isFirstRun() ? 'splash' : 'done'
   );
 
   const handleSplashDone = useCallback(() => setFirstRun('language'), []);
   const handleLanguageDone = useCallback(() => setFirstRun('onboarding'), []);
   const handleOnboardingDone = useCallback(() => {
+    setFirstRun('budget');
+  }, []);
+  const handleBudgetDone = useCallback((amount: number, period: BudgetPeriod) => {
+    setBudget(amount, period);
+    markFirstRunDone();
+    setFirstRun('done');
+  }, [setBudget]);
+  const handleBudgetSkip = useCallback(() => {
     markFirstRunDone();
     setFirstRun('done');
   }, []);
@@ -74,7 +88,8 @@ function App() {
   if (firstRun !== 'done') {
     if (firstRun === 'splash') return <SplashScreen onComplete={handleSplashDone} />;
     if (firstRun === 'language') return <LanguagePicker onNext={handleLanguageDone} />;
-    return <Onboarding onComplete={handleOnboardingDone} />;
+    if (firstRun === 'onboarding') return <Onboarding onComplete={handleOnboardingDone} />;
+    return <BudgetSetup onComplete={handleBudgetDone} onSkip={handleBudgetSkip} />;
   }
 
   if (isLoading || loading) {
@@ -97,6 +112,9 @@ function App() {
             transactions={transactions}
             currency={currency}
             onCurrencyChange={setCurrency}
+            budget={budget}
+            onSetBudget={setBudget}
+            onClearBudget={clearBudget}
           />
           <TransactionList
             transactions={transactions}
@@ -127,9 +145,15 @@ function App() {
       )}
 
       {currentTab === 'insight' && (
-        <div className="insights-placeholder">
-          <h2>Insights Coming Soon</h2>
-        </div>
+          <Insights
+            transactions={transactions}
+            categories={defaultCategories}
+            currency={currency}
+            budget={budget}
+            onSetBudget={setBudget}
+            onClearBudget={clearBudget}
+            onViewAll={() => { setHistorySyncDate(new Date()); setCurrentTab('history'); }}
+          />
       )}
 
       {showAdd && (
@@ -141,6 +165,7 @@ function App() {
         />
       )}
 
+      <OfflineBanner />
       <BottomNav
         currentTab={currentTab}
         onChangeTab={setCurrentTab}

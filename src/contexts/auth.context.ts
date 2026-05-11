@@ -4,10 +4,10 @@ export interface AuthState {
   user: {
     id: string;
     email: string | null;
-    name: string;
+    name?: string;
     currency: string;
     locale: string;
-    createdAt: string;
+    createdAt: number;
   } | null;
   isAuthenticated: boolean;
   isLoading: boolean;

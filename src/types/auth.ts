@@ -1,11 +1,6 @@
-export interface User {
-  id: string;
-  email: string | null;
-  name: string;
-  currency: string;
-  locale: string;
-  createdAt: string;
-}
+import type { User } from '.';
+
+export type AuthUser = Pick<User, 'id' | 'email' | 'currency' | 'locale' | 'createdAt'> & { name: string };
 
 export interface SessionToken {
   accessToken: string;
