@@ -44,18 +44,22 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(var(--surface-rgb, 255, 255, 255), 0.3) 0%,
-    rgba(var(--surface-rgb, 255, 255, 255), 0.5) 40%,
-    rgba(var(--surface-rgb, 255, 255, 255), 0.85) 100%
+    transparent 0%,
+    transparent 45%,
+    rgba(var(--surface-rgb, 255, 255, 255), 0.15) 55%,
+    rgba(var(--surface-rgb, 255, 255, 255), 0.6) 70%,
+    rgba(var(--surface-rgb, 255, 255, 255), 0.92) 100%
   );
 }
 
 :global([data-theme="dark"]) .imageOverlay {
   background: linear-gradient(
     to bottom,
-    rgba(var(--surface-rgb-dark, 18, 18, 18), 0.3) 0%,
-    rgba(var(--surface-rgb-dark, 18, 18, 18), 0.5) 40%,
-    rgba(var(--surface-rgb-dark, 18, 18, 18), 0.85) 100%
+    transparent 0%,
+    transparent 45%,
+    rgba(var(--surface-rgb-dark, 18, 18, 18), 0.15) 55%,
+    rgba(var(--surface-rgb-dark, 18, 18, 18), 0.6) 70%,
+    rgba(var(--surface-rgb-dark, 18, 18, 18), 0.92) 100%
   );
 }
 
