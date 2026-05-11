@@ -1,0 +1,152 @@
+.container {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.topContent {
+  padding: 48px 24px 24px;
+  text-align: center;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 24px;
+}
+
+.avatarCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.avatarLetter {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-on-primary-container);
+}
+
+.avatarBadge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputCard {
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-bottom: 2px solid var(--color-outline-variant);
+  padding-bottom: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.prefix {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+}
+
+.usernameInput {
+  width: 180px;
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  text-align: center;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+.usernameInput::placeholder {
+  color: var(--color-on-surface-variant);
+  opacity: 0.3;
+}
+
+.error {
+  font-size: 13px;
+  color: var(--color-error);
+  margin: 8px 0 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.continueBtn {
+  min-width: 140px;
+  min-height: 48px;
+  padding: 0 32px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.continueBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.continueBtn:active {
+  transform: translateY(0) scale(0.98);
+}

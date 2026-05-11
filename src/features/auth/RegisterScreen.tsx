@@ -6,6 +6,10 @@ interface AuthScreenProps {
   onSwitchToLogin: () => void;
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ALLOWED_SYMBOLS = '. ! @ # $ % ^ & * ( ) _ - + =';
+const ALLOWED_SET = new Set(ALLOWED_SYMBOLS.replace(/ /g, ''));
+
 export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
   const { register } = useAuth();
   const [name, setName] = useState('');
@@ -13,10 +17,37 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateEmail = useCallback((value: string) => {
+    if (value.trim() && !EMAIL_REGEX.test(value)) {
+      setEmailError('Invalid email');
+    } else {
+      setEmailError('');
+    }
+  }, []);
+
+  const validatePassword = useCallback((value: string) => {
+    if (!value) {
+      setPasswordError('');
+      return;
+    }
+    for (const ch of value) {
+      if (/[A-Za-z0-9]/.test(ch)) continue;
+      if (!ALLOWED_SET.has(ch)) {
+        setPasswordError(`Symbol "${ch}" is not allowed`);
+        return;
+      }
+    }
+    setPasswordError('');
+  }, []);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+    setPasswordError('');
     if (!name.trim()) {
       setError('Name is required');
       return;
@@ -24,6 +55,17 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
     if (!email.trim()) {
       setError('Email is required');
       return;
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      setEmailError('Invalid email');
+      return;
+    }
+    for (const ch of password) {
+      if (/[A-Za-z0-9]/.test(ch)) continue;
+      if (!ALLOWED_SET.has(ch)) {
+        setPasswordError(`Symbol "${ch}" is not allowed`);
+        return;
+      }
     }
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
@@ -42,7 +84,7 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
   return (
     <div className={styles.container}>
       <div className={styles.logoSection}>
-        <div className={styles.logoIcon}>GO</div>
+        <img src="/images/logoAlt.svg" alt="GOfinancial" className={styles.logoIcon} />
         <h1 className={styles.title}>GOfinancial</h1>
         <p className={styles.subtitle}>Start your financial habit</p>
       </div>
@@ -70,12 +112,14 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
           <input
             id="register-email"
             type="email"
-            className={styles.input}
+            className={`${styles.input} ${emailError ? styles.inputError : ''}`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onBlur={(e) => validateEmail(e.target.value)}
             autoComplete="email"
             placeholder="you@example.com"
           />
+          {emailError && <p className={styles.fieldError}>{emailError}</p>}
         </div>
 
         <div className={styles.field}>
@@ -83,12 +127,17 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
           <input
             id="register-password"
             type="password"
-            className={styles.input}
+            className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              validatePassword(e.target.value);
+            }}
             autoComplete="new-password"
             placeholder="At least 6 characters"
           />
+          {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
+          <p className={styles.passwordHint}>Allowed symbols: {ALLOWED_SYMBOLS}</p>
         </div>
 
         <button

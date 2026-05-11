@@ -477,6 +477,115 @@
   color: var(--color-primary);
 }
 
+.logoutItem {
+  margin-top: 8px;
+  border-top: 1px solid var(--color-outline-variant);
+  padding-top: 16px;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  min-height: 48px;
+  transition: opacity 0.2s;
+}
+
+.logoutButton:hover {
+  opacity: 0.85;
+}
+
+.logoutButton svg {
+  flex-shrink: 0;
+}
+
+.confirmationOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out forwards;
+  padding: 24px;
+}
+
+.confirmationDialog {
+  background: var(--color-surface);
+  max-width: 320px;
+  width: 100%;
+  border-radius: 16px;
+  padding: 24px;
+  animation: slideUp 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.confirmationTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0 0 8px 0;
+}
+
+.confirmationMessage {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.confirmationActions {
+  display: flex;
+  gap: 12px;
+}
+
+.confirmationCancel {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--color-outline-variant);
+  border-radius: 10px;
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirmationCancel:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.confirmationConfirm {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-error);
+  color: var(--color-on-error, white);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.confirmationConfirm:hover {
+  opacity: 0.85;
+}
+
 :global([dir="rtl"]) .settingLeft {
   flex-direction: row-reverse;
 }
