@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './AuthScreen.module.css';
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
 interface AuthScreenProps {
   onSwitchToLogin: () => void;
@@ -19,6 +20,7 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = useCallback((value: string) => {
     if (value.trim() && !EMAIL_REGEX.test(value)) {
@@ -124,18 +126,28 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
 
         <div className={styles.field}>
           <label htmlFor="register-password" className={styles.label}>Password</label>
-          <input
-            id="register-password"
-            type="password"
-            className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              validatePassword(e.target.value);
-            }}
-            autoComplete="new-password"
-            placeholder="At least 6 characters"
-          />
+          <div className={styles.passwordWrapper}>
+            <input
+              id="register-password"
+              type={showPassword ? 'text' : 'password'}
+              className={`${styles.input} ${styles.passwordInput} ${passwordError ? styles.inputError : ''}`}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                validatePassword(e.target.value);
+              }}
+              autoComplete="new-password"
+              placeholder="At least 6 characters"
+            />
+            <button
+              type="button"
+              className={styles.eyeButton}
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <MdVisibilityOff size={22} /> : <MdVisibility size={22} />}
+            </button>
+          </div>
           {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
           <p className={styles.passwordHint}>Allowed symbols: {ALLOWED_SYMBOLS}</p>
         </div>

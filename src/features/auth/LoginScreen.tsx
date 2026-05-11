@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './AuthScreen.module.css';
 import ForgotPasswordModal from './ForgotPasswordModal';
+import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
 interface AuthScreenProps {
   onSwitchToRegister: () => void;
@@ -20,6 +21,7 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = useCallback((value: string) => {
     if (value.trim() && !EMAIL_REGEX.test(value)) {
@@ -104,18 +106,28 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
 
         <div className={styles.field}>
           <label htmlFor="login-password" className={styles.label}>Password</label>
-          <input
-            id="login-password"
-            type="password"
-            className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              validatePassword(e.target.value);
-            }}
-            autoComplete="current-password"
-            placeholder="Enter your password"
-          />
+          <div className={styles.passwordWrapper}>
+            <input
+              id="login-password"
+              type={showPassword ? 'text' : 'password'}
+              className={`${styles.input} ${styles.passwordInput} ${passwordError ? styles.inputError : ''}`}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                validatePassword(e.target.value);
+              }}
+              autoComplete="current-password"
+              placeholder="Enter your password"
+            />
+            <button
+              type="button"
+              className={styles.eyeButton}
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <MdVisibilityOff size={22} /> : <MdVisibility size={22} />}
+            </button>
+          </div>
           {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
           <p className={styles.passwordHint}>Allowed symbols: {ALLOWED_SYMBOLS}</p>
         </div>
