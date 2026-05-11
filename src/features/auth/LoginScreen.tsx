@@ -1,10 +1,15 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './AuthScreen.module.css';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 interface AuthScreenProps {
   onSwitchToRegister: () => void;
 }
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ALLOWED_SYMBOLS = '. ! @ # $ % ^ & * ( ) _ - + =';
+const ALLOWED_SET = new Set(ALLOWED_SYMBOLS.replace(/ /g, ''));
 
 export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
   const { login } = useAuth();
@@ -12,13 +17,52 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  const validateEmail = useCallback((value: string) => {
+    if (value.trim() && !EMAIL_REGEX.test(value)) {
+      setEmailError('Invalid email');
+    } else {
+      setEmailError('');
+    }
+  }, []);
+
+  const validatePassword = useCallback((value: string) => {
+    if (!value) {
+      setPasswordError('');
+      return;
+    }
+    for (const ch of value) {
+      if (/[A-Za-z0-9]/.test(ch)) continue;
+      if (!ALLOWED_SET.has(ch)) {
+        setPasswordError(`Symbol "${ch}" is not allowed`);
+        return;
+      }
+    }
+    setPasswordError('');
+  }, []);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+    setPasswordError('');
     if (!email.trim() || !password.trim()) {
       setError('Email and password are required');
       return;
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      setEmailError('Invalid email');
+      return;
+    }
+    for (const ch of password) {
+      if (/[A-Za-z0-9]/.test(ch)) continue;
+      if (!ALLOWED_SET.has(ch)) {
+        setPasswordError(`Symbol "${ch}" is not allowed`);
+        return;
+      }
     }
     setLoading(true);
     try {
@@ -33,7 +77,7 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
   return (
     <div className={styles.container}>
       <div className={styles.logoSection}>
-        <div className={styles.logoIcon}>GO</div>
+        <img src="/images/logoAlt.svg" alt="GOfinancial" className={styles.logoIcon} />
         <h1 className={styles.title}>GOfinancial</h1>
         <p className={styles.subtitle}>Frictionless expense tracking</p>
       </div>
@@ -48,12 +92,14 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
           <input
             id="login-email"
             type="email"
-            className={styles.input}
+            className={`${styles.input} ${emailError ? styles.inputError : ''}`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onBlur={(e) => validateEmail(e.target.value)}
             autoComplete="email"
             placeholder="you@example.com"
           />
+          {emailError && <p className={styles.fieldError}>{emailError}</p>}
         </div>
 
         <div className={styles.field}>
@@ -61,13 +107,26 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
           <input
             id="login-password"
             type="password"
-            className={styles.input}
+            className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              validatePassword(e.target.value);
+            }}
             autoComplete="current-password"
             placeholder="Enter your password"
           />
+          {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
+          <p className={styles.passwordHint}>Allowed symbols: {ALLOWED_SYMBOLS}</p>
         </div>
+
+        <button
+          type="button"
+          className={styles.forgotLink}
+          onClick={() => setShowForgotPassword(true)}
+        >
+          Forgot password?
+        </button>
 
         <button
           type="submit"
@@ -84,6 +143,10 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
           </button>
         </p>
       </form>
+
+      {showForgotPassword && (
+        <ForgotPasswordModal onClose={() => setShowForgotPassword(false)} />
+      )}
     </div>
   );
 }

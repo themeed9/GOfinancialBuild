@@ -56,7 +56,11 @@ export type TranslationKey =
   | 'budget_remove'
   | 'budget_of'
   | 'budget_warning'
-  | 'budget_exceeded';
+  | 'budget_exceeded'
+  | 'logout'
+  | 'logout_confirm_title'
+  | 'logout_confirm_msg'
+  | 'confirm_logout';
 
 export interface TranslationSet {
   locale: string;
@@ -125,6 +129,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   es: {
@@ -188,6 +196,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   fr: {
@@ -251,6 +263,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   de: {
@@ -314,6 +330,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   pt: {
@@ -377,6 +397,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   ja: {
@@ -440,6 +464,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   zh: {
@@ -503,6 +531,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   ar: {
@@ -566,6 +598,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   hi: {
@@ -629,6 +665,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   ru: {
@@ -692,6 +732,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   tr: {
@@ -755,6 +799,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   ko: {
@@ -818,6 +866,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   it: {
@@ -881,6 +933,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   th: {
@@ -944,6 +1000,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   he: {
@@ -1007,6 +1067,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   pl: {
@@ -1070,6 +1134,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   vi: {
@@ -1133,6 +1201,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   sv: {
@@ -1196,6 +1268,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   id: {
@@ -1259,6 +1335,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   ms: {
@@ -1322,6 +1402,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   cs: {
@@ -1385,6 +1469,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   hu: {
@@ -1448,6 +1536,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   ro: {
@@ -1511,6 +1603,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   bg: {
@@ -1574,6 +1670,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   is: {
@@ -1637,6 +1737,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
   uk: {
@@ -1700,6 +1804,10 @@ const TRANSLATIONS: Record<string, TranslationSet> = {
       budget_of: 'of',
       budget_warning: 'Close to budget limit',
       budget_exceeded: 'Budget exceeded!',
+      logout: 'Log Out',
+      logout_confirm_title: 'Log Out',
+      logout_confirm_msg: 'Are you sure you want to log out?',
+      confirm_logout: 'Log Out',
     },
   },
 };

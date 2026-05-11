@@ -16,6 +16,7 @@ import SplashScreen from './features/onboarding/SplashScreen';
 import LanguagePicker from './features/onboarding/LanguagePicker';
 import Onboarding from './features/onboarding/Onboarding';
 import BudgetSetup from './features/onboarding/BudgetSetup';
+import UsernameSetup from './features/onboarding/UsernameSetup';
 import type { BudgetPeriod } from './types/budget';
 import './App.css';
 
@@ -54,13 +55,16 @@ function App() {
   const [showAdd, setShowAdd] = useState(false);
   const [currentTab, setCurrentTab] = useState<Tab>('dashboard');
   const [historySyncDate, setHistorySyncDate] = useState<Date | null>(null);
-  const [firstRun, setFirstRun] = useState<'splash' | 'language' | 'onboarding' | 'budget' | 'done'>(
+  const [firstRun, setFirstRun] = useState<'splash' | 'language' | 'onboarding' | 'username' | 'budget' | 'done'>(
     isFirstRun() ? 'splash' : 'done'
   );
 
   const handleSplashDone = useCallback(() => setFirstRun('language'), []);
   const handleLanguageDone = useCallback(() => setFirstRun('onboarding'), []);
   const handleOnboardingDone = useCallback(() => {
+    setFirstRun('username');
+  }, []);
+  const handleUsernameDone = useCallback((_username: string) => {
     setFirstRun('budget');
   }, []);
   const handleBudgetDone = useCallback((amount: number, period: BudgetPeriod) => {
@@ -89,6 +93,7 @@ function App() {
     if (firstRun === 'splash') return <SplashScreen onComplete={handleSplashDone} />;
     if (firstRun === 'language') return <LanguagePicker onNext={handleLanguageDone} />;
     if (firstRun === 'onboarding') return <Onboarding onComplete={handleOnboardingDone} />;
+    if (firstRun === 'username') return <UsernameSetup onComplete={handleUsernameDone} />;
     return <BudgetSetup onComplete={handleBudgetDone} onSkip={handleBudgetSkip} />;
   }
 

@@ -2,9 +2,10 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { User } from '../../types';
 import type { Budget, BudgetPeriod } from '../../types/budget';
 import styles from './SettingsModal.module.css';
-import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity, MdLanguage, MdExpandMore, MdAccountBalanceWallet } from 'react-icons/md';
+import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity, MdLanguage, MdExpandMore, MdAccountBalanceWallet, MdLogout } from 'react-icons/md';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useI18n } from '../../hooks/useI18n';
+import { useAuth } from '../../hooks/useAuth';
 import BudgetModal from '../insights/BudgetModal';
 import { getCurrencyByCode } from '../../data/currencies';
 
@@ -24,6 +25,8 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const languageRef = useRef<HTMLDivElement | null>(null);
   const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const { logout } = useAuth();
   const currencyOption = getCurrencyByCode(user.currency) ?? { code: 'us', symbol: '$', name: 'US Dollar', countryHint: 'USA', flag: 'us', rateToUSD: 1 };
   const appVersion = import.meta.env.VITE_APP_VERSION || '0.0.0';
 
@@ -34,8 +37,23 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
       }
     };
     document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showLogoutConfirm) {
+          setShowLogoutConfirm(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [onClose, showLogoutConfirm]);
 
   const toggleTheme = useCallback(() => {
     const newTheme = user.theme === 'dark' ? 'light' : 'dark';
@@ -59,7 +77,22 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
     URL.revokeObjectURL(url);
   }, [user, appVersion]);
 
+  const handleLogoutClick = useCallback(() => {
+    setShowLogoutConfirm(true);
+  }, []);
+
+  const handleLogoutConfirm = useCallback(() => {
+    setShowLogoutConfirm(false);
+    onClose();
+    logout();
+  }, [logout, onClose]);
+
+  const handleLogoutCancel = useCallback(() => {
+    setShowLogoutConfirm(false);
+  }, []);
+
   return (
+    <>
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
@@ -225,6 +258,13 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
                 </div>
               </div>
             </div>
+
+            <div className={styles.logoutItem}>
+              <button className={styles.logoutButton} onClick={handleLogoutClick}>
+                <MdLogout size={20} />
+                <span>{strings.logout}</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -331,5 +371,23 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
         )}
       </div>
     </div>
+
+    {showLogoutConfirm && (
+      <div className={styles.confirmationOverlay} onClick={handleLogoutCancel}>
+        <div className={styles.confirmationDialog} onClick={(e) => e.stopPropagation()}>
+          <h3 className={styles.confirmationTitle}>{strings.logout_confirm_title}</h3>
+          <p className={styles.confirmationMessage}>{strings.logout_confirm_msg}</p>
+          <div className={styles.confirmationActions}>
+            <button className={styles.confirmationCancel} onClick={handleLogoutCancel}>
+              {strings.cancel}
+            </button>
+            <button className={styles.confirmationConfirm} onClick={handleLogoutConfirm}>
+              {strings.confirm_logout}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
