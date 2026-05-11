@@ -1,22 +1,30 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { User } from '../../types';
+import type { Budget, BudgetPeriod } from '../../types/budget';
 import styles from './SettingsModal.module.css';
-import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity, MdLanguage, MdExpandMore } from 'react-icons/md';
+import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity, MdLanguage, MdExpandMore, MdAccountBalanceWallet } from 'react-icons/md';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useI18n } from '../../hooks/useI18n';
+import BudgetModal from '../insights/BudgetModal';
+import { getCurrencyByCode } from '../../data/currencies';
 
 interface SettingsModalProps {
   user: User;
   onClose: () => void;
   onUpdateUser: (user: Partial<User>) => void;
+  budget: Budget | null;
+  onSetBudget: (amount: number, period: BudgetPeriod) => void;
+  onClearBudget: () => void;
 }
 
-export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsModalProps) {
+export default function SettingsModal({ user, onClose, onUpdateUser, budget, onSetBudget, onClearBudget }: SettingsModalProps) {
   const { strings } = useI18n();
   const { language, setLanguage, languages } = useLanguage();
   const [activeTab, setActiveTab] = useState<'settings' | 'terms' | 'privacy'>('settings');
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const languageRef = useRef<HTMLDivElement | null>(null);
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const currencyOption = getCurrencyByCode(user.currency) ?? { code: 'us', symbol: '$', name: 'US Dollar', countryHint: 'USA', flag: 'us', rateToUSD: 1 };
   const appVersion = import.meta.env.VITE_APP_VERSION || '0.0.0';
 
   useEffect(() => {
@@ -175,10 +183,38 @@ export default function SettingsModal({ user, onClose, onUpdateUser }: SettingsM
                   <span className={styles.settingHint}>{strings.export_data_hint}</span>
                 </div>
               </div>
-              <button className={styles.exportButton} onClick={exportData}>
+              <button className={styles.textLinkBtn} onClick={exportData}>
                 {strings.export_button}
               </button>
             </div>
+
+            <div className={styles.settingItem}>
+              <div className={styles.settingLeft}>
+                <MdAccountBalanceWallet size={20} />
+                <div>
+                  <span className={styles.settingLabel}>{strings.budget}</span>
+                  <span className={styles.settingHint}>
+                    {budget ? `${budget.amount.toLocaleString()} / ${budget.period}` : strings.budget_set_hint}
+                  </span>
+                </div>
+              </div>
+              <button
+                className={styles.textLinkBtn}
+                onClick={() => setShowBudgetModal(true)}
+              >
+                {budget ? 'Adjust budget' : strings.budget_set}
+              </button>
+            </div>
+
+            {showBudgetModal && (
+              <BudgetModal
+                budget={budget}
+                currency={currencyOption}
+                onSave={onSetBudget}
+                onClear={onClearBudget}
+                onClose={() => setShowBudgetModal(false)}
+              />
+            )}
 
             <div className={styles.settingItem}>
               <div className={styles.settingLeft}>

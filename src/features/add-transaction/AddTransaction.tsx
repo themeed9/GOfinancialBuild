@@ -22,12 +22,10 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
-  const [descriptionError, setDescriptionError] = useState(false);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
-    setDescriptionError(false);
 
     const numAmount = parseFloat(amount);
     if (!amount || isNaN(numAmount)) {
@@ -42,18 +40,21 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
       setError(strings.error_select_category);
       return;
     }
+
     if (!note.trim()) {
-      setDescriptionError(true);
+      setError(strings.error_enter_description);
       return;
     }
 
-  const originalCurrency = getCurrencyISOCode(currency);
+    const finalNote = note.trim();
+
+    const originalCurrency = getCurrencyISOCode(currency);
 
     const transaction: Transaction = {
       id: generateId(),
       amount: numAmount,
       categoryId,
-      note: sanitizeInput(note.trim()),
+      note: sanitizeInput(finalNote),
       timestamp: Date.now(),
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -128,18 +129,14 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
             <input
               id="note"
               type="text"
-              className={`${styles.input} ${descriptionError ? styles.inputError : ''}`}
+              className={styles.input}
               value={note}
-              onChange={e => {
-                setNote(e.target.value);
-                if (descriptionError) setDescriptionError(false);
-              }}
+              onChange={e => setNote(e.target.value)}
               placeholder={strings.description_placeholder}
               maxLength={100}
               autoComplete="off"
             />
           </div>
-          {descriptionError && <span className={styles.inlineError}>{strings.error_enter_description}</span>}
         </div>
 
         {error && (
@@ -148,7 +145,11 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
           </div>
         )}
 
-        <button type="submit" className={styles.submit}>
+        <button 
+          type="submit" 
+          className={`${styles.submit} ${(!amount || !categoryId || !note.trim()) ? styles.submitDisabled : ''}`}
+          disabled={!amount || !categoryId || !note.trim()}
+        >
           {strings.save_transaction}
         </button>
       </form>

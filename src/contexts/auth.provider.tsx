@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { User } from '../types/auth';
+import type { User } from '../types';
 import { authService } from '../services/api';
 import { useTransactions } from '../hooks/useTransactions';
 import { IDBTransactionStorage } from '../services/storage';
@@ -12,7 +12,7 @@ const LOCAL_SESSION_KEY = 'gofinancial_session';
 interface LocalUser {
   id: string;
   email: string;
-  password: string;
+  passwordHash: string;
   name: string;
   currency: string;
   locale: string;
@@ -36,6 +36,13 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,11 +61,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             foundLocal = true;
             setUser({
               id: found.id,
+              username: found.name,
+              fullName: found.name,
               email: found.email,
-              name: found.name,
+              profileImage: null,
               currency: found.currency,
               locale: found.locale,
-              createdAt: found.createdAt,
+              theme: 'light',
+              createdAt: new Date(found.createdAt).getTime(),
+              name: found.name,
             });
           }
         }
@@ -93,17 +104,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const users = getLocalUsers();
-    const found = users.find(u => u.email === email && u.password === password);
+    const passwordHash = await hashPassword(password);
+    const found = users.find(u => u.email === email && u.passwordHash === passwordHash);
     if (!found) throw new Error('Invalid credentials');
 
     localStorage.setItem(LOCAL_SESSION_KEY, found.id);
     setUser({
       id: found.id,
+      username: found.name,
+      fullName: found.name,
       email: found.email,
-      name: found.name,
+      profileImage: null,
       currency: found.currency,
       locale: found.locale,
-      createdAt: found.createdAt,
+      theme: 'light',
+      createdAt: new Date(found.createdAt).getTime(),
+      name: found.name,
     });
   }, []);
 
@@ -118,11 +134,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const users = getLocalUsers();
     if (users.find(u => u.email === email)) throw new Error('Email already exists');
+    const passwordHash = await hashPassword(password);
 
     const newUser: LocalUser = {
       id: generateId(),
       email,
-      password,
+      passwordHash,
       name,
       currency: 'NGN',
       locale: 'en-NG',
@@ -135,11 +152,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser({
       id: newUser.id,
+      username: newUser.name,
+      fullName: newUser.name,
       email: newUser.email,
-      name: newUser.name,
+      profileImage: null,
       currency: newUser.currency,
       locale: newUser.locale,
-      createdAt: newUser.createdAt,
+      theme: 'light',
+      createdAt: new Date(newUser.createdAt).getTime(),
+      name: newUser.name,
     });
   }, []);
 

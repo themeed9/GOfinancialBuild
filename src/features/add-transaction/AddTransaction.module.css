@@ -226,6 +226,15 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+.submitDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  background: var(--color-outline-variant) !important;
+  color: var(--color-on-surface-variant) !important;
+}
+
 :global([dir="rtl"]) .inlineError {
   text-align: right;
   padding-left: 0;

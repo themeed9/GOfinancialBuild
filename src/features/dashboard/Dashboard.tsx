@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import type { Transaction, User } from '../../types';
 import type { CurrencyOption } from '../../data/currencies';
+import type { Budget, BudgetPeriod } from '../../types/budget';
 import { getCurrencies, getCurrencyISOCode } from '../../data/currencies';
 import ProfileModal from './ProfileModal';
 import SettingsModal from './SettingsModal';
@@ -13,9 +14,12 @@ interface DashboardProps {
   transactions: Transaction[];
   currency: CurrencyOption;
   onCurrencyChange: (currency: CurrencyOption) => void;
+  budget: Budget | null;
+  onSetBudget: (amount: number, period: BudgetPeriod) => void;
+  onClearBudget: () => void;
 }
 
-export default function Dashboard({ transactions, currency, onCurrencyChange }: DashboardProps) {
+export default function Dashboard({ transactions, currency, onCurrencyChange, budget, onSetBudget, onClearBudget }: DashboardProps) {
   const { strings } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -70,27 +74,36 @@ export default function Dashboard({ transactions, currency, onCurrencyChange }: 
 
   const targetISO = useMemo(() => getCurrencyISOCode(currency), [currency]);
 
+  const todayTransactions = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    return transactions.filter(t => t.timestamp >= today.getTime() && t.timestamp < tomorrow.getTime());
+  }, [transactions]);
+
   const total = useMemo(() => {
-    return transactions.reduce((sum, t) => {
+    return todayTransactions.reduce((sum, t) => {
       const fromCurrency = t.originalCurrency || targetISO;
       const converted = convertCurrency(t.amount, fromCurrency, currency);
       return sum + converted;
     }, 0);
-  }, [transactions, targetISO, currency]);
+  }, [todayTransactions, targetISO, currency]);
 
   const hasMixedCurrencies = useMemo(() => {
-    return transactions.some(t => t.originalCurrency && t.originalCurrency !== targetISO);
-  }, [transactions, targetISO]);
+    return todayTransactions.some(t => t.originalCurrency && t.originalCurrency !== targetISO);
+  }, [todayTransactions, targetISO]);
 
   const originalCurrencies = useMemo(() => {
     const symbols = new Set<string>();
-    transactions.forEach(t => {
+    todayTransactions.forEach(t => {
       if (t.originalCurrency) {
         symbols.add(getCurrencySymbol(t.originalCurrency));
       }
     });
     return Array.from(symbols);
-  }, [transactions]);
+  }, [todayTransactions]);
 
   const displayAmount = useMemo(() => {
     return new Intl.NumberFormat('en-US', {
@@ -176,6 +189,9 @@ export default function Dashboard({ transactions, currency, onCurrencyChange }: 
           user={user}
           onClose={() => setShowSettings(false)}
           onUpdateUser={updateUser}
+          budget={budget}
+          onSetBudget={onSetBudget}
+          onClearBudget={onClearBudget}
         />
       )}
     </header>
