@@ -586,6 +586,116 @@
   opacity: 0.85;
 }
 
+.exportOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out forwards;
+  padding: 24px;
+}
+
+.exportDialog {
+  background: var(--color-surface);
+  max-width: 340px;
+  width: 100%;
+  border-radius: 20px;
+  padding: 28px 24px 20px;
+  animation: popIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  text-align: center;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.exportTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0 0 4px;
+}
+
+.exportDesc {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  margin: 0 0 24px;
+}
+
+.exportOptions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.exportOptionBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 12px;
+  border: 1.5px solid var(--color-outline-variant);
+  border-radius: 14px;
+  background: var(--color-surface-container-low);
+  color: var(--color-on-surface);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 100px;
+}
+
+.exportOptionBtn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.exportOptionBtn svg {
+  color: var(--color-primary);
+}
+
+.exportOptionBtn:hover svg {
+  color: var(--color-on-primary-container);
+}
+
+.exportOptionLabel {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.exportOptionHint {
+  font-size: 11px;
+  color: var(--color-on-surface-variant);
+}
+
+.exportOptionBtn:hover .exportOptionHint {
+  color: var(--color-on-primary-container);
+}
+
+.exportCancelBtn {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--color-outline-variant);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exportCancelBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 :global([dir="rtl"]) .settingLeft {
   flex-direction: row-reverse;
 }

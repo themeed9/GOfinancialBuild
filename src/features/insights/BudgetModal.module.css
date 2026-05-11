@@ -5,34 +5,36 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
-  z-index: 100;
+  z-index: 200;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  animation: fadeIn 0.25s ease-out forwards;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out forwards;
+  padding: 24px;
 }
 
 .modal {
   background: var(--color-surface);
   width: 100%;
-  max-width: 480px;
-  border-radius: 20px 20px 0 0;
-  z-index: 101;
-  max-height: calc(100vh - 60px);
+  max-width: 380px;
+  border-radius: 20px;
+  z-index: 201;
+  max-height: calc(100vh - 80px);
   overflow-y: auto;
-  padding: 8px 24px calc(40px + env(safe-area-inset-bottom, 0px));
-  transform: translateY(100%);
-  animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  padding: 24px;
+  animation: popIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   margin: 0 auto;
 }
 
-/* Drag handle */
-.handle {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--color-outline-variant);
-  margin: 12px auto 24px;
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .header {
