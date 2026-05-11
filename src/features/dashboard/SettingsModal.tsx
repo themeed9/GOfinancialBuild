@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { User } from '../../types';
+import type { Transaction, User } from '../../types';
 import type { Budget, BudgetPeriod } from '../../types/budget';
 import styles from './SettingsModal.module.css';
-import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity, MdLanguage, MdExpandMore, MdAccountBalanceWallet, MdLogout } from 'react-icons/md';
+import { MdClose, MdDarkMode, MdLightMode, MdDownload, MdInfo, MdGavel, MdSecurity, MdLanguage, MdExpandMore, MdAccountBalanceWallet, MdLogout, MdDescription, MdTableChart } from 'react-icons/md';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useI18n } from '../../hooks/useI18n';
 import { useAuth } from '../../hooks/useAuth';
@@ -16,9 +16,10 @@ interface SettingsModalProps {
   budget: Budget | null;
   onSetBudget: (amount: number, period: BudgetPeriod) => void;
   onClearBudget: () => void;
+  transactions: Transaction[];
 }
 
-export default function SettingsModal({ user, onClose, onUpdateUser, budget, onSetBudget, onClearBudget }: SettingsModalProps) {
+export default function SettingsModal({ user, onClose, onUpdateUser, budget, onSetBudget, onClearBudget, transactions }: SettingsModalProps) {
   const { strings } = useI18n();
   const { language, setLanguage, languages } = useLanguage();
   const [activeTab, setActiveTab] = useState<'settings' | 'terms' | 'privacy'>('settings');
@@ -26,6 +27,7 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
   const languageRef = useRef<HTMLDivElement | null>(null);
   const [showBudgetModal, setShowBudgetModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showExportOptions, setShowExportOptions] = useState(false);
   const { logout } = useAuth();
   const currencyOption = getCurrencyByCode(user.currency) ?? { code: 'us', symbol: '$', name: 'US Dollar', countryHint: 'USA', flag: 'us', rateToUSD: 1 };
   const appVersion = import.meta.env.VITE_APP_VERSION || '0.0.0';
@@ -62,20 +64,42 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
     localStorage.setItem('gofinancial_theme', newTheme);
   }, [user.theme, onUpdateUser]);
 
-  const exportData = useCallback(() => {
-    const data = {
-      user,
-      exportDate: new Date().toISOString(),
-      appVersion,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const generateCSV = useCallback(() => {
+    const headers = ['Date', 'Description', 'Category', 'Amount', 'Currency'];
+    const rows = transactions.map(t => [
+      new Date(t.timestamp).toLocaleDateString(),
+      `"${t.note.replace(/"/g, '""')}"`,
+      t.categoryId,
+      t.amount.toFixed(2),
+      user.currency,
+    ]);
+    return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  }, [transactions, user.currency]);
+
+  const generateHTML = useCallback(() => {
+    const rows = transactions.map(t => `
+      <tr>
+        <td>${new Date(t.timestamp).toLocaleDateString()}</td>
+        <td>${t.note}</td>
+        <td>${t.categoryId}</td>
+        <td>${user.currency} ${t.amount.toFixed(2)}</td>
+      </tr>`).join('');
+    return `<html><head><meta charset="utf-8"><title>GOfinancial Export</title><style>table{width:100%;border-collapse:collapse}th,td{padding:8px 12px;border:1px solid #ddd;text-align:left}th{background:#0769F7;color:#fff}tr:nth-child(even){background:#f5f5f5}</style></head><body><h2>Expense Report</h2><p>Generated: ${new Date().toLocaleString()}</p><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><p>Total transactions: ${transactions.length}</p></body></html>`;
+  }, [transactions, user.currency]);
+
+  const handleExportFormat = useCallback((format: 'csv' | 'html') => {
+    setShowExportOptions(false);
+    const content = format === 'csv' ? generateCSV() : generateHTML();
+    const mimeType = format === 'csv' ? 'text/csv' : 'text/html';
+    const ext = format === 'csv' ? 'csv' : 'html';
+    const blob = new Blob([content], { type: `${mimeType};charset=utf-8;` });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `gofinancial-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `gofinancial-export-${new Date().toISOString().split('T')[0]}.${ext}`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [user, appVersion]);
+  }, [generateCSV, generateHTML]);
 
   const handleLogoutClick = useCallback(() => {
     setShowLogoutConfirm(true);
@@ -216,7 +240,7 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
                   <span className={styles.settingHint}>{strings.export_data_hint}</span>
                 </div>
               </div>
-              <button className={styles.textLinkBtn} onClick={exportData}>
+              <button className={styles.textLinkBtn} onClick={() => setShowExportOptions(true)}>
                 {strings.export_button}
               </button>
             </div>
@@ -385,6 +409,30 @@ export default function SettingsModal({ user, onClose, onUpdateUser, budget, onS
               {strings.confirm_logout}
             </button>
           </div>
+        </div>
+      </div>
+    )}
+
+    {showExportOptions && (
+      <div className={styles.exportOverlay} onClick={() => setShowExportOptions(false)}>
+        <div className={styles.exportDialog} onClick={(e) => e.stopPropagation()}>
+          <h3 className={styles.exportTitle}>Export Data</h3>
+          <p className={styles.exportDesc}>Choose export format</p>
+          <div className={styles.exportOptions}>
+            <button className={styles.exportOptionBtn} onClick={() => handleExportFormat('csv')}>
+              <MdTableChart size={32} />
+              <span className={styles.exportOptionLabel}>Excel (CSV)</span>
+              <span className={styles.exportOptionHint}>Open in Excel, Google Sheets</span>
+            </button>
+            <button className={styles.exportOptionBtn} onClick={() => handleExportFormat('html')}>
+              <MdDescription size={32} />
+              <span className={styles.exportOptionLabel}>PDF</span>
+              <span className={styles.exportOptionHint}>Printable report</span>
+            </button>
+          </div>
+          <button className={styles.exportCancelBtn} onClick={() => setShowExportOptions(false)}>
+            Cancel
+          </button>
         </div>
       </div>
     )}

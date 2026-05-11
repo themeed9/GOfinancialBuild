@@ -51,8 +51,6 @@ export default function BudgetModal({ budget, currency, onSave, onClear, onClose
   return (
     <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true" aria-label="Set budget">
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <div className={styles.handle} aria-hidden="true" />
-
         <div className={styles.header}>
           <h2 className={styles.title}>{budget ? 'Adjust Budget' : 'Set a Budget'}</h2>
           <button

@@ -9,6 +9,7 @@ import styles from './Dashboard.module.css';
 import { MdExpandMore, MdPerson } from 'react-icons/md';
 import { convertCurrency, getCurrencySymbol } from '../../utils/currency';
 import { useI18n } from '../../hooks/useI18n';
+import { useAuth } from '../../hooks/useAuth';
 
 interface DashboardProps {
   transactions: Transaction[];
@@ -49,6 +50,22 @@ export default function Dashboard({ transactions, currency, onCurrencyChange, bu
     localStorage.setItem('gofinancial_user', JSON.stringify(newUser));
     return newUser;
   });
+
+  const { user: authUser } = useAuth();
+
+  useEffect(() => {
+    if (authUser && (authUser.name || authUser.email)) {
+      setUser(prev => {
+        const updates: Partial<User> = {};
+        if (authUser.name && !prev.fullName) updates.fullName = authUser.name;
+        if (authUser.email && !prev.email) updates.email = authUser.email;
+        if (!Object.keys(updates).length) return prev;
+        const updated = { ...prev, ...updates };
+        localStorage.setItem('gofinancial_user', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  }, [authUser]);
 
   const updateUser = useCallback((updates: Partial<User>) => {
     setUser((prev) => {
@@ -192,6 +209,7 @@ export default function Dashboard({ transactions, currency, onCurrencyChange, bu
           budget={budget}
           onSetBudget={onSetBudget}
           onClearBudget={onClearBudget}
+          transactions={transactions}
         />
       )}
     </header>
