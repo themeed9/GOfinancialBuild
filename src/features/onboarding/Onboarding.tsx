@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import styles from './Onboarding.module.css';
 
@@ -11,6 +11,8 @@ interface SlideData {
   title: string;
   description: string;
 }
+
+const IMAGES = ['/images/onboarding-1.svg', '/images/onboarding-2.svg', '/images/onboarding-3.svg'];
 
 const SLIDES: Record<string, SlideData[]> = {
   en: [
@@ -95,6 +97,22 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   const slides = getSlides(language);
 
+  useEffect(() => {
+    IMAGES.forEach(src => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
+    });
+    return () => {
+      IMAGES.forEach(src => {
+        const link = document.querySelector(`link[href="${src}"]`);
+        if (link) link.remove();
+      });
+    };
+  }, []);
+
   const goNext = useCallback(() => {
     if (page < slides.length - 1) setPage(p => p + 1);
     else onComplete();
@@ -128,12 +146,13 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       onTouchEnd={handleTouchEnd}
     >
       <div className={styles.imageContainer}>
-        <img
-          src={slides[page].image}
-          alt=""
-          className={styles.backgroundImage}
-          key={page}
-        />
+        <div className={styles.imageTrack} style={{ transform: `translateX(-${page * 100}%)` }}>
+          {slides.map((slide, i) => (
+            <div key={i} className={styles.imageSlide}>
+              <img src={slide.image} alt="" className={styles.backgroundImage} />
+            </div>
+          ))}
+        </div>
         <div className={styles.imageOverlay}></div>
       </div>
 
