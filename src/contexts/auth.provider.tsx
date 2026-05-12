@@ -128,12 +128,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { user: newUser } = await authService.register(email, password, name);
       setUser(newUser);
       return;
-    } catch {
-      // Fallback to local auth
+    } catch (err) {
+      if (err instanceof TypeError) {
+        // Network error — fallback to local auth
+      } else if (err instanceof Error) {
+        if (err.message.toLowerCase().includes('already exists')) {
+          throw new Error('This email has already been used');
+        }
+        // API/validation error — surface the reason to the user
+        throw err;
+      }
     }
 
     const users = getLocalUsers();
-    if (users.find(u => u.email === email)) throw new Error('Email already exists');
+    if (users.find(u => u.email === email)) throw new Error('This email has already been used');
     const passwordHash = await hashPassword(password);
 
     const newUser: LocalUser = {

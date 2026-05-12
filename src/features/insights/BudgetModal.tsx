@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { Budget, BudgetPeriod } from '../../types/budget';
 import type { CurrencyOption } from '../../data/currencies';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdErrorOutline } from 'react-icons/md';
 import styles from './BudgetModal.module.css';
 
 interface BudgetModalProps {
@@ -81,7 +81,7 @@ export default function BudgetModal({ budget, currency, onSave, onClear, onClose
               aria-describedby={error ? 'budget-error' : undefined}
             />
           </div>
-          {error && <p id="budget-error" className={styles.errorText}>{error}</p>}
+          {error && <p id="budget-error" className={styles.errorText}><MdErrorOutline size={14} /> {error}</p>}
         </div>
 
         {/* Period */}

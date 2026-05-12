@@ -7,7 +7,7 @@ import { convertCurrency } from '../../utils/currency';
 import { useI18n } from '../../hooks/useI18n';
 import BudgetModal from './BudgetModal';
 import styles from './Insights.module.css';
-import { MdChevronRight } from 'react-icons/md';
+import { MdChevronRight, MdErrorOutline } from 'react-icons/md';
 
 type Period = 'week' | 'month';
 
@@ -595,7 +595,7 @@ function BudgetPieCard({ spent, budget, currency, onAdjust }: BudgetPieCardProps
 
       {isOver && (
         <div className={styles.budgetOverBanner}>
-          ⚠ Budget exceeded by {formatAmount(spent - budget, currency)}
+          <MdErrorOutline size={16} /><span>Budget exceeded by {formatAmount(spent - budget, currency)}</span>
         </div>
       )}
 

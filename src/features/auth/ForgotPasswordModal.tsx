@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import styles from './ForgotPasswordModal.module.css';
-import { MdClose, MdArrowBack } from 'react-icons/md';
+import { MdClose, MdArrowBack, MdErrorOutline, MdCheckCircleOutline } from 'react-icons/md';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -130,7 +130,7 @@ export default function ForgotPasswordModal({ onClose }: ForgotPasswordModalProp
                 placeholder="you@example.com"
                 autoFocus
               />
-              {emailError && <p className={styles.fieldError}>{emailError}</p>}
+              {emailError && <div className={styles.fieldError}><MdErrorOutline size={12} /><span>{emailError}</span></div>}
             </div>
             <button className={styles.primaryButton} onClick={handleEmailSubmit}>
               Send OTP
@@ -159,7 +159,7 @@ export default function ForgotPasswordModal({ onClose }: ForgotPasswordModalProp
                 autoComplete="one-time-code"
                 autoFocus
               />
-              {otpError && <p className={styles.fieldError}>{otpError}</p>}
+              {otpError && <div className={styles.fieldError}><MdErrorOutline size={12} /><span>{otpError}</span></div>}
             </div>
             <button className={styles.primaryButton} onClick={handleOtpSubmit}>
               Verify OTP
@@ -194,10 +194,10 @@ export default function ForgotPasswordModal({ onClose }: ForgotPasswordModalProp
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter password"
               />
-              {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
+              {passwordError && <div className={styles.fieldError}><MdErrorOutline size={12} /><span>{passwordError}</span></div>}
             </div>
             {successMessage && (
-              <div className={styles.successBanner}>{successMessage}</div>
+              <div className={styles.successBanner}><MdCheckCircleOutline size={18} /><span>{successMessage}</span></div>
             )}
             <button className={styles.primaryButton} onClick={handleResetSubmit}>
               Reset Password

@@ -52,10 +52,11 @@
 }
 
 .errorBanner {
-  padding: 12px 16px;
-  background: var(--color-error-container);
-  color: var(--color-on-error-container);
-  border-radius: var(--radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-error);
   font-size: 14px;
   text-align: center;
 }
@@ -100,6 +101,9 @@
 }
 
 .fieldError {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
   color: var(--color-error);
   margin: 0;
@@ -120,6 +124,13 @@
 
 .passwordInput {
   padding-right: 52px !important;
+}
+
+.passwordInput::-ms-reveal,
+.passwordInput::-ms-clear,
+.passwordInput::-webkit-reveal,
+.passwordInput::-webkit-clear-button {
+  display: none !important;
 }
 
 .eyeButton {

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import styles from './UsernameSetup.module.css';
-import { MdEdit } from 'react-icons/md';
+import { MdEdit, MdErrorOutline } from 'react-icons/md';
 
 interface UsernameSetupProps {
   onComplete: (username: string) => void;
@@ -57,7 +57,7 @@ export default function UsernameSetup({ onComplete }: UsernameSetupProps) {
               autoComplete="username"
             />
           </div>
-          {error && <p className={styles.error}>{error}</p>}
+          {error && <p className={styles.error}><MdErrorOutline size={14} /> {error}</p>}
         </div>
       </div>
 

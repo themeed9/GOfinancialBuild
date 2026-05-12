@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { BudgetPeriod } from '../../types/budget';
 import styles from './BudgetSetup.module.css';
+import { MdErrorOutline } from 'react-icons/md';
 
 interface BudgetSetupProps {
   onComplete: (amount: number, period: BudgetPeriod) => void;
@@ -57,7 +58,7 @@ export default function BudgetSetup({ onComplete, onSkip }: BudgetSetupProps) {
               autoFocus
             />
           </div>
-          {error && <p className={styles.error}>{error}</p>}
+          {error && <p className={styles.error}><MdErrorOutline size={14} /> {error}</p>}
         </div>
 
         <p className={styles.periodLabel}>This is my budget for:</p>

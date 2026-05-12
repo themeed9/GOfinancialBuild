@@ -55,6 +55,7 @@ function App() {
   const [showAdd, setShowAdd] = useState(false);
   const [currentTab, setCurrentTab] = useState<Tab>('dashboard');
   const [historySyncDate, setHistorySyncDate] = useState<Date | null>(null);
+  const [pendingDate, setPendingDate] = useState<Date | null>(null);
   const [firstRun, setFirstRun] = useState<'splash' | 'language' | 'onboarding' | 'username' | 'budget' | 'done'>(
     isFirstRun() ? 'splash' : 'done'
   );
@@ -87,6 +88,7 @@ function App() {
   const handleSave = useCallback((transaction: typeof transactions[0]) => {
     addTransaction(transaction);
     setShowAdd(false);
+    setPendingDate(null);
   }, [addTransaction]);
 
   if (firstRun !== 'done') {
@@ -146,6 +148,10 @@ function App() {
           currency={currency}
           viewMode="history"
           syncDate={historySyncDate}
+          onAddEntry={(date) => {
+            setPendingDate(date);
+            setShowAdd(true);
+          }}
         />
       )}
 
@@ -166,7 +172,8 @@ function App() {
           categories={defaultCategories}
           currency={currency}
           onSave={handleSave}
-          onCancel={() => setShowAdd(false)}
+          onCancel={() => { setShowAdd(false); setPendingDate(null); }}
+          defaultTimestamp={pendingDate?.getTime()}
         />
       )}
 
