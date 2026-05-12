@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Transaction, Category } from '../../types';
 import styles from './TransactionList.module.css';
-import { MdClose, MdDelete, MdExpandMore } from 'react-icons/md';
+import { MdClose, MdDelete, MdExpandMore, MdErrorOutline } from 'react-icons/md';
 import { useI18n } from '../../hooks/useI18n';
 
 interface EditTransactionModalProps {
@@ -178,7 +178,7 @@ export default function EditTransactionModal({
                 autoComplete="off"
               />
             </div>
-            {descriptionError && <span className={styles.editInlineError}>{strings.error_enter_description}</span>}
+            {descriptionError && <span className={styles.editInlineError}><MdErrorOutline size={12} /> {strings.error_enter_description}</span>}
           </div>
         </div>
 

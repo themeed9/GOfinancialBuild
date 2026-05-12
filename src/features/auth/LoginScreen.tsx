@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './AuthScreen.module.css';
 import ForgotPasswordModal from './ForgotPasswordModal';
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import { MdVisibility, MdVisibilityOff, MdErrorOutline } from 'react-icons/md';
 
 interface AuthScreenProps {
   onSwitchToRegister: () => void;
@@ -87,7 +87,7 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <h2 className={styles.formTitle}>Welcome back</h2>
 
-        {error && <div className={styles.errorBanner}>{error}</div>}
+        {error && <div className={styles.errorBanner}><MdErrorOutline size={16} /><span>{error}</span></div>}
 
         <div className={styles.field}>
           <label htmlFor="login-email" className={styles.label}>Email</label>
@@ -101,7 +101,7 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
             autoComplete="email"
             placeholder="you@example.com"
           />
-          {emailError && <p className={styles.fieldError}>{emailError}</p>}
+          {emailError && <div className={styles.fieldError}><MdErrorOutline size={12} /><span>{emailError}</span></div>}
         </div>
 
         <div className={styles.field}>
@@ -128,7 +128,7 @@ export default function LoginScreen({ onSwitchToRegister }: AuthScreenProps) {
               {showPassword ? <MdVisibilityOff size={22} /> : <MdVisibility size={22} />}
             </button>
           </div>
-          {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
+          {passwordError && <div className={styles.fieldError}><MdErrorOutline size={12} /><span>{passwordError}</span></div>}
           <p className={styles.passwordHint}>Allowed symbols: {ALLOWED_SYMBOLS}</p>
         </div>
 

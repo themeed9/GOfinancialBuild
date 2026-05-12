@@ -4,19 +4,21 @@ import type { CurrencyOption } from '../../data/currencies';
 import styles from './AddTransaction.module.css';
 import { getCurrencyISOCode } from '../../data/currencies';
 import { useI18n } from '../../hooks/useI18n';
+import { MdErrorOutline } from 'react-icons/md';
 
 interface AddTransactionProps {
   categories: Category[];
   currency: CurrencyOption;
   onSave: (transaction: Transaction) => void;
   onCancel: () => void;
+  defaultTimestamp?: number;
 }
 
 function generateId(): string {
   return `txn_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export default function AddTransaction({ categories, currency, onSave, onCancel }: AddTransactionProps) {
+export default function AddTransaction({ categories, currency, onSave, onCancel, defaultTimestamp }: AddTransactionProps) {
   const { strings } = useI18n();
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -50,14 +52,15 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
 
     const originalCurrency = getCurrencyISOCode(currency);
 
+    const now = defaultTimestamp ?? Date.now();
     const transaction: Transaction = {
       id: generateId(),
       amount: numAmount,
       categoryId,
       note: sanitizeInput(finalNote),
-      timestamp: Date.now(),
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      timestamp: now,
+      createdAt: now,
+      updatedAt: now,
       originalCurrency,
     };
 
@@ -141,7 +144,7 @@ export default function AddTransaction({ categories, currency, onSave, onCancel 
 
         {error && (
           <div id="form-error" className={styles.error} role="alert">
-            {error}
+            <MdErrorOutline size={16} /><span>{error}</span>
           </div>
         )}
 

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import styles from './AuthScreen.module.css';
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import { MdVisibility, MdVisibilityOff, MdErrorOutline } from 'react-icons/md';
 
 interface AuthScreenProps {
   onSwitchToLogin: () => void;
@@ -76,8 +76,12 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
     setLoading(true);
     try {
       await register(email, password, name);
-    } catch {
-      setError('Registration failed. Try again.');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Registration failed. Try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -94,7 +98,7 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <h2 className={styles.formTitle}>Create account</h2>
 
-        {error && <div className={styles.errorBanner}>{error}</div>}
+        {error && <div className={styles.errorBanner}><MdErrorOutline size={16} /><span>{error}</span></div>}
 
         <div className={styles.field}>
           <label htmlFor="register-name" className={styles.label}>Name</label>
@@ -121,7 +125,7 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
             autoComplete="email"
             placeholder="you@example.com"
           />
-          {emailError && <p className={styles.fieldError}>{emailError}</p>}
+          {emailError && <div className={styles.fieldError}><MdErrorOutline size={12} /><span>{emailError}</span></div>}
         </div>
 
         <div className={styles.field}>
@@ -148,7 +152,7 @@ export default function RegisterScreen({ onSwitchToLogin }: AuthScreenProps) {
               {showPassword ? <MdVisibilityOff size={22} /> : <MdVisibility size={22} />}
             </button>
           </div>
-          {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
+          {passwordError && <div className={styles.fieldError}><MdErrorOutline size={12} /><span>{passwordError}</span></div>}
           <p className={styles.passwordHint}>Allowed symbols: {ALLOWED_SYMBOLS}</p>
         </div>
 

@@ -17,6 +17,7 @@ interface TransactionListProps {
   viewMode?: 'dashboard' | 'history';
   onSwitchToHistory?: (date: Date) => void;
   syncDate?: Date | null;
+  onAddEntry?: (date: Date) => void;
 }
 
 function formatCurrency(amount: number, symbol: string, originalCurrency: string | undefined, currency: CurrencyOption): string {
@@ -43,7 +44,7 @@ function formatShortDate(timestamp: number): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).replace(/ /g, '-').replace(',', '');
 }
 
-export default function TransactionList({ transactions, categories, onDelete, onUpdate, currency, viewMode = 'history', onSwitchToHistory, syncDate }: TransactionListProps) {
+export default function TransactionList({ transactions, categories, onDelete, onUpdate, currency, viewMode = 'history', onSwitchToHistory, syncDate, onAddEntry }: TransactionListProps) {
   const { strings } = useI18n();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [selectedDate, setSelectedDate] = useState(syncDate || new Date());
@@ -255,7 +256,18 @@ export default function TransactionList({ transactions, categories, onDelete, on
         )}
 
         {sorted.length === 0 ? (
-          <p className={styles.emptyDay}>{viewMode === 'dashboard' ? strings.no_entry_day : strings.no_entry_date}</p>
+          <div className={styles.emptyState}>
+            <p className={styles.emptyDay}>{viewMode === 'dashboard' ? strings.no_entry_day : strings.no_entry_date}</p>
+            {viewMode === 'history' && (
+              <button
+                type="button"
+                className={styles.addEntryButton}
+                onClick={() => onAddEntry?.(selectedDate)}
+              >
+                Add entry for this date
+              </button>
+            )}
+          </div>
         ) : (
           <>
             <div className={styles.list}>
