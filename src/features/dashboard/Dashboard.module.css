@@ -187,7 +187,7 @@
 
 .balanceLabel {
     font-size: 14px;
-    color: var(--color-primary);
+    color: var(--color-on-surface-variant);
     margin-bottom: 8px;
   }
 
@@ -220,7 +220,6 @@
     font-size: 11px;
     font-weight: 400;
     color: var(--color-on-surface-variant);
-    opacity: 0.7;
     margin-top: 6px;
     letter-spacing: 0.02em;
   }
