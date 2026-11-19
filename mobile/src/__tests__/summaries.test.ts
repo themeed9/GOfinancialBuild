@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { slugify } from '../core/categories';
+import { settingsFromDevice } from '../data/defaults';
 import { monthWeekTotals, recentTransactions, spentToday } from '../core/summaries';
 import { at, tx } from './helpers';
 
@@ -38,5 +39,23 @@ describe('summaries', () => {
   it('slugifies category names', () => {
     expect(slugify('Food & Dining')).toBe('food-dining');
     expect(slugify('  Bills  /  Utilities ')).toBe('bills-utilities');
+  });
+});
+
+describe('settingsFromDevice', () => {
+  it('uses the phone currency, locale and week start', () => {
+    expect(settingsFromDevice({ languageTag: 'en-GH', currencyCode: 'GHS', firstWeekday: 1 })).toEqual({
+      currency: 'GHS',
+      locale: 'en-GH',
+      weekStart: 0,
+    });
+  });
+
+  it('falls back to Naira, en-NG and Monday for unknown or missing values', () => {
+    expect(settingsFromDevice({ languageTag: null, currencyCode: 'XYZ', firstWeekday: null })).toEqual({
+      currency: 'NGN',
+      locale: 'en-NG',
+      weekStart: 1,
+    });
   });
 });

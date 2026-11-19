@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "node"
+    ],
+    "noEmit": true
+  },
+  "include": [
+    "src/__tests__/**/*.ts",
+    "src/core/**/*.ts",
+    "src/data/**/*.ts",
+    "src/state/appDataReducer.ts",
+    "vitest.config.mts",
+    "vitest.setup.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
