@@ -17,6 +17,46 @@ The product rules live in the root brief, `../AGENTS.md` (golden rule, add-trans
 | Deletes | Hard delete | Soft delete (`deletedAt`) | Lets a future sync propagate deletions |
 | Week start | Sunday | Monday by default (configurable `WeekStart`) | |
 
+## Release 1 scope (from the case study's "what I would do differently")
+
+Lesson from V1: *building more is not the same as strengthening the product.* Protect Quick Add and the daily total, remove steps that don't serve capture or awareness, and make every secondary feature earn its place.
+
+### Core loop (protect above everything)
+
+**Open → Add → amount → tap category → saved → daily total updates → close.**
+
+- Tapping a category saves the entry. The note is optional and added later through edit, so it never blocks the loop.
+- The Add button is always visible and is the most prominent control on every main screen.
+- After saving, the user lands back on the dashboard with the new total visible.
+
+### In release 1
+
+| Feature | Why it earns its place |
+|---|---|
+| Quick Add | The product |
+| Daily total (dashboard) | Immediate awareness after each entry |
+| Weekly trend + recent transactions (dashboard) | The next layer of context, per the mockup |
+| History with edit/delete | Fix mistakes; required for trust |
+| Budget with carry-over (Insight tab) | Requested by the owner after V1 lost carried-over money. Optional, set from Insight, never part of first launch |
+| Monthly spending by category (Insight tab) | Categories exist so entries add up to context |
+| CSV export (Settings) | The only backup and route out while data is on-device |
+| Delete all data (Settings) | Clear ownership and deletion |
+
+### Deferred until there's evidence they're needed
+
+Accounts/login/register/forgot password · username setup · onboarding screens (first launch goes straight to the dashboard; currency and language come from the device) · in-app language picker · theme setting (follow the system) · calendar view · printable HTML report · per-transaction currency switching or conversion · bank sync · AI guidance. Do not build these without the owner's go-ahead.
+
+### Architecture assumptions (stated up front this time)
+
+- **One user, one device.** No accounts, no backend, no network calls. Data lives only in on-device SQLite.
+- **Ownership and deletion:** the user owns the data on their phone. "Delete all data" or uninstalling removes it. Nothing is collected, so the Play Store data-safety form can say no data is collected.
+- **Recovery:** CSV export only. Losing the phone loses unexported data; the app must say so plainly near the export.
+- **Before any cloud sync or wider multi-device use:** design real authentication, record ownership, user isolation, recovery, sync conflicts and server-side deletion first. That is a separate project.
+
+### Validate repeat usage before expanding
+
+Play Store's required closed test (a group of testers for about two weeks) doubles as the repeat-usage check. The success criteria are decided by the owner before the test starts. No feature from the deferred list gets built until that test has run.
+
 ## Layout
 
 - `src/core/` — pure TypeScript domain logic (no React, no React Native). Must stay importable from Node so it can be unit-tested with Vitest.
