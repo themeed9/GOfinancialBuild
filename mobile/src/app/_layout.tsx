@@ -1,4 +1,5 @@
-import { Tabs } from 'expo-router/js-tabs';
+import { useFonts } from 'expo-font';
+import Stack from 'expo-router/stack';
 import * as SplashScreen from 'expo-splash-screen';
 import { SQLiteProvider } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
@@ -7,45 +8,41 @@ import { useEffect } from 'react';
 import { DATABASE_NAME, migrate } from '@/data/db';
 import { AppDataProvider, useAppData } from '@/state/AppDataProvider';
 import { useTheme } from '@/theme';
+import { FONT_FILES } from '@/theme/fonts';
 
 SplashScreen.preventAutoHideAsync();
 
-function AppTabs() {
+function Navigator() {
   const theme = useTheme();
   const { status } = useAppData();
+  const [fontsLoaded, fontError] = useFonts(FONT_FILES);
+  const ready = status !== 'loading' && (fontsLoaded || fontError !== null);
 
-  // Keep the splash screen up until stored data has loaded, so the
+  // Keep the splash screen up until data and fonts are ready, so the
   // dashboard never flashes an empty total.
   useEffect(() => {
-    if (status !== 'loading') SplashScreen.hideAsync();
-  }, [status]);
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
 
-  // Placeholder tab bar. The design's custom bar (Add pill + three tabs)
-  // replaces it when the dashboard screen is built.
+  if (!ready) return null;
+
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
-        tabBarStyle: { backgroundColor: theme.colors.surface },
-        sceneStyle: { backgroundColor: theme.colors.background },
-      }}>
-      <Tabs.Screen name="index" options={{ title: 'Dashboard' }} />
-      <Tabs.Screen name="history" options={{ title: 'History' }} />
-      <Tabs.Screen name="insights" options={{ title: 'Insight' }} />
-    </Tabs>
+    <>
+      <StatusBar style={theme.dark ? 'light' : 'dark'} />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.colors.background } }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="add" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="transaction/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+      </Stack>
+    </>
   );
 }
 
 export default function RootLayout() {
-  const theme = useTheme();
-
   return (
     <SQLiteProvider databaseName={DATABASE_NAME} onInit={migrate}>
       <AppDataProvider>
-        <StatusBar style={theme.dark ? 'light' : 'dark'} />
-        <AppTabs />
+        <Navigator />
       </AppDataProvider>
     </SQLiteProvider>
   );

@@ -10,14 +10,14 @@ interface Props {
 
 /** Temporary screen body until each feature screen is built. */
 export function PlaceholderScreen({ title, description }: Props) {
-  const { colors, typography, spacing } = useTheme();
+  const { colors, text, spacing } = useTheme();
 
   return (
     <SafeAreaView style={[styles.root, { padding: spacing.xl }]}>
-      <Text accessibilityRole="header" style={[typography.headlineMedium, { color: colors.onBackground }]}>
+      <Text accessibilityRole="header" style={[text.headlineMedium, { color: colors.onBackground }]}>
         {title}
       </Text>
-      <Text style={[typography.bodyLarge, { color: colors.onSurfaceVariant, marginTop: spacing.xs }]}>
+      <Text style={[text.bodyLarge, { color: colors.onSurfaceVariant, marginTop: spacing.xs }]}>
         {description}
       </Text>
     </SafeAreaView>
