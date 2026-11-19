@@ -1,0 +1,81 @@
+name: Android test build
+
+# Builds an installable APK of the mobile app on GitHub's servers and
+# publishes it as a release, so testers get a download link without an
+# Expo account. Stable link to the newest build:
+#   https://github.com/themeed9/GOfinancialBuild/releases/latest/download/GOfinancial-test.apk
+#
+# The APK is signed with the React Native template's shared debug key:
+# fine for testing and installing over older test builds, NOT for the
+# Play Store (use an EAS production build or an upload key for that).
+
+on:
+  push:
+    branches: [feat/expo-mobile]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/android-test-build.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: android-test-build
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Tests
+        run: npm run test:run
+
+      - name: Generate native Android project
+        run: npx expo prebuild --platform android --no-install
+        env:
+          CI: 1
+
+      - name: Build release APK
+        working-directory: mobile/android
+        # Phones in use today are ARM; skipping x86 roughly halves build time.
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk GOfinancial-test.apk
+          short_sha="${GITHUB_SHA::7}"
+          gh release create "test-build-${GITHUB_RUN_NUMBER}" GOfinancial-test.apk \
+            --target "$GITHUB_SHA" \
+            --title "Test build ${GITHUB_RUN_NUMBER} (${short_sha})" \
+            --latest \
+            --notes "Android test build of the GOfinancial mobile app from \`${GITHUB_REF_NAME}\` at ${short_sha}.
+
+          **Install:** open this page on an Android phone, tap **GOfinancial-test.apk**, then allow installs from your browser when asked.
+
+          Test build only: signed with a shared test key, not for the Play Store."
