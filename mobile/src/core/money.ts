@@ -100,3 +100,18 @@ export function sumMinor(values: Iterable<number>): number {
   for (const v of values) total += v;
   return total;
 }
+
+/**
+ * Short form for tight spaces such as chart labels:
+ * ₦3,280 · ₦40,000 · ₦111.5k · ₦2.3M (whole units, no fraction).
+ */
+export function formatCompactMoney(minor: number, currencyCode: string, locale: string): string {
+  const { decimals, symbol } = getCurrency(currencyCode);
+  const major = Math.round(Math.abs(minor) / factor(decimals));
+  const sign = minor < 0 ? '-' : '';
+  const oneDecimal = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+
+  if (major >= 1_000_000) return `${sign}${symbol}${oneDecimal.format(major / 1_000_000)}M`;
+  if (major >= 100_000) return `${sign}${symbol}${oneDecimal.format(major / 1_000)}k`;
+  return `${sign}${symbol}${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(major)}`;
+}

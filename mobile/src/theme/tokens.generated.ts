@@ -189,4 +189,12 @@ export const radius = {
   "full": 9999
 } as const;
 
+/** CSS box-shadow strings; React Native supports them via the boxShadow style. */
+export const elevation = {
+  "none": "none",
+  "sm": "0 1px 2px 0 hsla(0, 0%, 0%, 0.05)",
+  "md": "0 2px 4px -1px hsla(0, 0%, 0%, 0.06), 0 4px 6px -1px hsla(0, 0%, 0%, 0.1)",
+  "lg": "0 10px 15px -3px hsla(0, 0%, 0%, 0.1), 0 4px 6px -2px hsla(0, 0%, 0%, 0.05)"
+} as const;
+
 export const fontFamily = "Inter";

@@ -65,6 +65,9 @@ export const spacing = ${JSON.stringify(json.spacing.scale, null, 2)} as const;
 
 export const radius = ${JSON.stringify(radius, null, 2)} as const;
 
+/** CSS box-shadow strings; React Native supports them via the boxShadow style. */
+export const elevation = ${JSON.stringify(json.elevation, null, 2)} as const;
+
 export const fontFamily = ${JSON.stringify(json.typography.fontFamily)};
 `;
 

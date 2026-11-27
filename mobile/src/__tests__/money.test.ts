@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getCurrency } from '../core/currencies';
-import { formatMoney, moneyParts, parseAmountInput, sumMinor } from '../core/money';
+import { formatCompactMoney, formatMoney, moneyParts, parseAmountInput, sumMinor } from '../core/money';
 
 describe('money', () => {
   describe('parseAmountInput', () => {
@@ -73,6 +73,14 @@ describe('money', () => {
       expect(formatMoney(328000, 'NGN', 'en-NG', { trimZeroFraction: true })).toBe('₦3,280');
       expect(formatMoney(328050, 'NGN', 'en-NG', { trimZeroFraction: true })).toBe('₦3,280.50');
     });
+  });
+
+  it('formats compact amounts for chart labels', () => {
+    expect(formatCompactMoney(328000, 'NGN', 'en-NG')).toBe('₦3,280');
+    expect(formatCompactMoney(4000000, 'NGN', 'en-NG')).toBe('₦40,000');
+    expect(formatCompactMoney(11152000, 'NGN', 'en-NG')).toBe('₦111.5k');
+    expect(formatCompactMoney(230000000, 'NGN', 'en-NG')).toBe('₦2.3M');
+    expect(formatCompactMoney(0, 'NGN', 'en-NG')).toBe('₦0');
   });
 
   it('sums minor units exactly', () => {
