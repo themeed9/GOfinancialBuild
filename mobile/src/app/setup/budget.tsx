@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,7 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AMOUNT_ERRORS } from '@/components/AmountEntry';
 import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
+import { currentPlan } from '@/core/budget/plans';
 import { getCurrency } from '@/core/currencies';
+import { minorToInputText } from '@/core/keypad';
 import type { PeriodKind } from '@/core/dates';
 import { parseAmountInput } from '@/core/money';
 import { useAppData } from '@/state/AppDataProvider';
@@ -22,14 +24,17 @@ const PERIODS: { kind: PeriodKind; label: string }[] = [
 /** First-run step 2 (V2): optional budget. Skip goes straight to the dashboard. */
 export default function BudgetSetupScreen() {
   const theme = useTheme();
-  const { settings, setBudget } = useAppData();
+  const { settings, plans, setBudget } = useAppData();
+  const editing = useLocalSearchParams<{ mode?: string }>().mode === 'edit';
   const currency = getCurrency(settings.currency);
-  const [text, setText] = useState('');
-  const [period, setPeriod] = useState<PeriodKind>('month');
+  const [existing] = useState(() => (editing ? currentPlan(plans, Date.now()) : null));
+  const [text, setText] = useState(existing && existing.currency === currency.code ? minorToInputText(existing.amountMinor, currency.code) : '');
+  const [period, setPeriod] = useState<PeriodKind>(existing?.period ?? 'month');
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const done = () => router.replace('/');
+  // First run continues to the dashboard; editing (from Insight or Settings) goes back.
+  const done = () => (editing ? router.back() : router.replace('/'));
 
   const save = async () => {
     const parsed = parseAmountInput(text.replace(',', '.'), currency.code);
@@ -113,7 +118,12 @@ export default function BudgetSetupScreen() {
           </View>
 
           <View style={[styles.actions, { gap: theme.spacing.sm }]}>
-            <Button label="Skip" variant="secondary" onPress={done} accessibilityHint="Set a budget later from Insights" />
+            <Button
+              label={editing ? 'Cancel' : 'Skip'}
+              variant="secondary"
+              onPress={done}
+              accessibilityHint={editing ? undefined : 'You can set a budget later from Insight'}
+            />
             <Button label="Continue" onPress={save} loading={saving} disabled={text === ''} style={{ minWidth: 160 }} />
           </View>
         </ScrollView>

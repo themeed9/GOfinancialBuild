@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { DEFAULT_CATEGORIES } from '@/core/categories';
 import { useTheme } from '@/theme';
 import { AppText } from './AppText';
+import { CategoryIcon } from './CategoryIcon';
 
 interface Props {
   onSelect(categoryId: string): void;
@@ -42,9 +43,7 @@ export function CategoryGrid({ onSelect, selectedId, disabled, actionHint }: Pro
                 boxShadow: theme.elevation.sm,
               },
             ]}>
-            <AppText variant="titleMedium" importantForAccessibility="no">
-              {c.icon}
-            </AppText>
+            <CategoryIcon category={c} size={30} />
             <AppText variant="labelLarge" color="onSurfaceVariant" style={styles.label}>
               {c.name}
             </AppText>

@@ -35,5 +35,8 @@ export interface Category {
   /** Slug, e.g. "food-dining" */
   id: string;
   name: string;
-  icon: string;
+  /** SVG path data on a 24×24 grid (Material icons) */
+  iconPath: string;
+  /** Category colour used in charts and icon tints */
+  color: string;
 }

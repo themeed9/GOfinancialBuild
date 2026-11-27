@@ -82,6 +82,8 @@ export function moneyParts(minor: number, currencyCode: string, locale: string):
 export interface FormatOptions {
   /** Hide ".00" when the amount is whole. Default false. */
   trimZeroFraction?: boolean;
+  /** Round to whole units and drop the fraction (e.g. averages). */
+  wholeUnits?: boolean;
 }
 
 export function formatMoney(
@@ -90,8 +92,9 @@ export function formatMoney(
   locale: string,
   options: FormatOptions = {},
 ): string {
-  const p = moneyParts(minor, currencyCode, locale);
-  const showFraction = p.fraction !== '' && !(options.trimZeroFraction && Number(p.fraction) === 0);
+  const f = factor(getCurrency(currencyCode).decimals);
+  const p = moneyParts(options.wholeUnits ? Math.round(minor / f) * f : minor, currencyCode, locale);
+  const showFraction = p.fraction !== '' && !options.wholeUnits && !(options.trimZeroFraction && Number(p.fraction) === 0);
   return `${p.sign}${p.symbol}${p.whole}${showFraction ? p.separator + p.fraction : ''}`;
 }
 

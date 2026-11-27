@@ -5,6 +5,7 @@ import { formatMoney } from '@/core/money';
 import type { Transaction } from '@/core/types';
 import { useTheme } from '@/theme';
 import { AppText } from './AppText';
+import { CategoryIcon } from './CategoryIcon';
 import { PencilIcon } from './icons';
 
 interface Props {
@@ -25,16 +26,12 @@ export function TransactionRow({ transaction, locale, onEdit }: Props) {
         {
           backgroundColor: theme.colors.surfaceContainerLowest,
           borderRadius: theme.radius.xl,
-          boxShadow: theme.elevation.md,
+          boxShadow: theme.elevation.sm,
           paddingLeft: theme.spacing.md,
           gap: theme.spacing.sm,
         },
       ]}>
-      <View
-        importantForAccessibility="no-hide-descendants"
-        style={[styles.icon, { backgroundColor: theme.colors.surfaceContainerHigh }]}>
-        <AppText variant="bodySmall">{category.icon}</AppText>
-      </View>
+      <CategoryIcon category={category} size={32} />
       <View style={styles.text}>
         <AppText variant="bodyLarge" color="onSurfaceVariant" numberOfLines={1}>
           {category.name}
@@ -62,7 +59,6 @@ export function TransactionRow({ transaction, locale, onEdit }: Props) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', minHeight: 64 },
-  icon: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   text: { flex: 1 },
   edit: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
 });

@@ -105,3 +105,40 @@ export function BackIcon({ color, size = 24 }: IconProps) {
     </Svg>
   );
 }
+
+export function PersonIcon({ color, size = 22 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill={color} />
+    </Svg>
+  );
+}
+
+export function ChevronIcon({ color, size = 18, direction = 'right' }: IconProps & { direction?: 'left' | 'right' | 'down' }) {
+  const d = direction === 'left' ? 'M15 6l-6 6 6 6' : direction === 'down' ? 'M6 9l6 6 6-6' : 'M9 6l6 6-6 6';
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d={d} {...stroke(color)} strokeWidth={2.2} />
+    </Svg>
+  );
+}
+
+export function FlameIcon({ color, size = 16 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        fill={color}
+        d="M19.48 12.35c-1.57-4.08-7.16-4.3-5.81-10.23.1-.44-.37-.78-.75-.55C9.29 3.71 6.68 8 8.87 13.62c.18.46-.36.89-.75.59-1.81-1.37-2-3.34-1.84-4.75.06-.52-.62-.77-.91-.34C4.69 10.16 4 11.84 4 14.37c.38 5.6 5.11 7.32 6.81 7.54 2.43.31 5.06-.14 6.95-1.87 2.08-1.93 2.84-5.01 1.72-7.69z"
+      />
+    </Svg>
+  );
+}
+
+/** Material-style filled icon from 24×24 path data (settings rows). */
+export function PathIcon({ color, size = 22, d }: IconProps & { d: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d={d} fill={color} />
+    </Svg>
+  );
+}

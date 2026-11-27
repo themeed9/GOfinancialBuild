@@ -18,7 +18,7 @@ import {
 import { at, tx } from './helpers';
 import { createTestDb } from './nodeDb';
 
-const DEFAULTS: Settings = { currency: 'NGN', locale: 'en-NG', weekStart: 1, username: null };
+const DEFAULTS: Settings = { currency: 'NGN', locale: 'en-NG', weekStart: 1, username: null, theme: 'system' as const };
 
 describe('repository (SQLite)', () => {
   let db: ReturnType<typeof createTestDb>;
@@ -90,9 +90,9 @@ describe('repository (SQLite)', () => {
 
   it('falls back to defaults and persists settings', async () => {
     expect(await loadSettings(db, DEFAULTS)).toEqual(DEFAULTS);
-    await saveSettings(db, { currency: 'GHS', locale: 'en-GH', weekStart: 0, username: 'meed' });
-    expect(await loadSettings(db, DEFAULTS)).toEqual({ currency: 'GHS', locale: 'en-GH', weekStart: 0, username: 'meed' });
-    await saveSettings(db, { currency: 'GHS', locale: 'en-GH', weekStart: 0, username: null });
+    await saveSettings(db, { currency: 'GHS', locale: 'en-GH', weekStart: 0, username: 'meed', theme: 'dark' });
+    expect(await loadSettings(db, DEFAULTS)).toEqual({ currency: 'GHS', locale: 'en-GH', weekStart: 0, username: 'meed', theme: 'dark' });
+    await saveSettings(db, { currency: 'GHS', locale: 'en-GH', weekStart: 0, username: null, theme: 'system' as const });
     expect((await loadSettings(db, DEFAULTS)).username).toBeNull();
   });
 

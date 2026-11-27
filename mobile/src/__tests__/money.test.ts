@@ -69,7 +69,12 @@ describe('money', () => {
       expect(formatMoney(-2500, 'USD', 'en-US')).toBe('-$25.00');
     });
 
-    it('can hide a zero fraction', () => {
+    it('can round to whole units', () => {
+    expect(formatMoney(935250, 'NGN', 'en-NG', { wholeUnits: true })).toBe('₦9,353');
+    expect(formatMoney(935249, 'NGN', 'en-NG', { wholeUnits: true })).toBe('₦9,352');
+  });
+
+  it('can hide a zero fraction', () => {
       expect(formatMoney(328000, 'NGN', 'en-NG', { trimZeroFraction: true })).toBe('₦3,280');
       expect(formatMoney(328050, 'NGN', 'en-NG', { trimZeroFraction: true })).toBe('₦3,280.50');
     });

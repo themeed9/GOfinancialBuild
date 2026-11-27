@@ -35,7 +35,7 @@ Lesson from V1: *building more is not the same as strengthening the product.* Pr
 |---|---|
 | Quick Add | The product |
 | Daily total (dashboard) | Immediate awareness after each entry |
-| Weekly trend + recent transactions (dashboard) | The next layer of context, per the mockup |
+| Weekly glow-trend graph + recent transactions (home) | The next layer of context (V2 design A, picked by the owner) |
 | History with edit/delete | Fix mistakes; required for trust |
 | Username step (first run) | Owner decision: personal touch, and the moment an anonymous user is registered |
 | Budget step (first run, **skippable**) | Owner decision; Skip goes straight to the dashboard |
@@ -61,6 +61,13 @@ Visible accounts/login (built but hidden — see below) · onboarding slides and
 ### Validate repeat usage before expanding
 
 Play Store's required closed test (a group of testers for about two weeks) doubles as the repeat-usage check. The success criteria are decided by the owner before the test starts. No feature from the deferred list gets built until that test has run.
+
+## V2 navigation (owner's Figma, Nov 2026)
+
+- **No tab bar.** Home has three controls: avatar → Settings sheet (Profile tab), "See all" → History, **Add expense**. Tapping the trend card opens Insight; pencils edit rows.
+- History and Insight are stack screens with a back arrow. Insight = month/week heatmap, logging streak, biggest-weekday sentence, budget card, "Where it went" donut.
+- Settings is one sheet with Profile / Settings / Terms / Privacy tabs. "Log out" from the design is **Delete all data** (there are no visible accounts yet).
+- Preview builds can be filled with demo data: `EXPO_PUBLIC_DEMO_DATA=1 npx expo export --platform web` (never set it for store builds).
 
 ## Layout
 

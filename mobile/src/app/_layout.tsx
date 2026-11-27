@@ -30,7 +30,10 @@ function Navigator() {
     <>
       <StatusBar style={theme.dark ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.colors.background } }}>
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="index" />
+        <Stack.Screen name="history" />
+        <Stack.Screen name="insights" />
+        <Stack.Screen name="settings" options={{ presentation: 'transparentModal', animation: 'slide_from_bottom', contentStyle: { backgroundColor: 'transparent' } }} />
         <Stack.Screen name="add" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="transaction/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="setup/username" options={{ gestureEnabled: false, animation: 'fade' }} />

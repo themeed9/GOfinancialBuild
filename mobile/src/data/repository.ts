@@ -108,7 +108,11 @@ export interface Settings {
   weekStart: WeekStart;
   /** Display name chosen on first run; null until the username step is done */
   username: string | null;
+  /** Dark mode override; 'system' follows the phone */
+  theme: ThemePreference;
 }
+
+export type ThemePreference = 'system' | 'light' | 'dark';
 
 export async function loadSettings(db: Db, defaults: Settings): Promise<Settings> {
   const rows = await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM settings', []);
@@ -121,6 +125,7 @@ export async function loadSettings(db: Db, defaults: Settings): Promise<Settings
       ? (weekStart as WeekStart)
       : defaults.weekStart,
     username: stored.username ?? defaults.username,
+    theme: stored.theme === 'light' || stored.theme === 'dark' ? stored.theme : defaults.theme,
   };
 }
 

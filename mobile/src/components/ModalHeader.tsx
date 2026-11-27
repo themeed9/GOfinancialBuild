@@ -5,13 +5,13 @@ import { useTheme } from '@/theme';
 import { AppText } from './AppText';
 import { CloseIcon } from './icons';
 
-export function ModalHeader({ title }: { title: string }) {
+export function ModalHeader({ title, onClose }: { title: string; onClose?: () => void }) {
   const theme = useTheme();
 
   return (
     <View style={[styles.row, { paddingHorizontal: theme.spacing.xs }]}>
       <Pressable
-        onPress={() => router.back()}
+        onPress={onClose ?? (() => router.back())}
         accessibilityRole="button"
         accessibilityLabel="Close"
         style={styles.close}>

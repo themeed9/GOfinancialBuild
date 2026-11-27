@@ -49,6 +49,7 @@ describe('settingsFromDevice', () => {
       locale: 'en-GH',
       weekStart: 0,
       username: null,
+      theme: 'system',
     });
   });
 
@@ -58,6 +59,7 @@ describe('settingsFromDevice', () => {
       locale: 'en-NG',
       weekStart: 1,
       username: null,
+      theme: 'system',
     });
   });
 });

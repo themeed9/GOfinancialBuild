@@ -26,5 +26,5 @@ export function settingsFromDevice(info: DeviceLocaleInfo): Settings {
       ? ((info.firstWeekday - 1) as WeekStart)
       : DEFAULT_WEEK_START;
 
-  return { currency, locale: info.languageTag || FALLBACK_LOCALE, weekStart, username: null };
+  return { currency, locale: info.languageTag || FALLBACK_LOCALE, weekStart, username: null, theme: 'system' };
 }
