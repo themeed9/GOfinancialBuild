@@ -30,6 +30,19 @@ The budget is a running account, not a counter that resets every week:
 
 So the dashboard can show both "this week: ₦10,000 + ₦4,000 carried over" and your overall balance. Changing the budget only affects the current period onwards; past weeks keep the amount that applied then. The logic is in `src/core/budget/` and covered by `src/__tests__/ledger.test.ts`.
 
+## Counting users (Firebase, optional)
+
+The app registers an **anonymous** user when someone finishes the username step and records one "opened today" per user per day. Without Firebase config it simply skips this.
+
+1. Create a project at console.firebase.google.com (the free Spark plan is enough).
+2. **Authentication → Sign-in method → Anonymous → Enable.** (Enable **Email/Password** too, for the hidden account screens.)
+3. **Firestore Database → Create database**, then paste `firebase/firestore.rules` into the Rules tab and publish.
+4. **Project settings → Your apps → Web app (</>)**: copy `apiKey`, `authDomain`, `projectId`, `appId` into `mobile/.env.local` (see `.env.example`) and as GitHub repository **variables** with the same names, for the Android test build.
+
+Where to read the numbers:
+- **Registered users:** Authentication → Users.
+- **Daily active users:** Firestore → `dailyActive` → a day → number of documents in `users`.
+
 ## Design tokens
 
 Colours, type and spacing come from `../tokens`, shared with the web app. After editing them:

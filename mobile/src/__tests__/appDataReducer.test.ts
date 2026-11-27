@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { appDataReducer, type AppData } from '../state/appDataReducer';
 import { at, plan, tx } from './helpers';
 
-const settings = { currency: 'NGN', locale: 'en-NG', weekStart: 1 as const };
+const settings = { currency: 'NGN', locale: 'en-NG', weekStart: 1 as const, username: null };
 const empty: AppData = { status: 'loading', transactions: [], plans: [], settings };
 
 describe('appDataReducer', () => {

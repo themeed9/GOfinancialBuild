@@ -33,6 +33,10 @@ function Navigator() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="add" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="transaction/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="setup/username" options={{ gestureEnabled: false, animation: 'fade' }} />
+        <Stack.Screen name="setup/budget" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="account/create" />
+        <Stack.Screen name="account/sign-in" />
       </Stack>
     </>
   );

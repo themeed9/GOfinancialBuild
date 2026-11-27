@@ -48,6 +48,7 @@ describe('settingsFromDevice', () => {
       currency: 'GHS',
       locale: 'en-GH',
       weekStart: 0,
+      username: null,
     });
   });
 
@@ -56,6 +57,7 @@ describe('settingsFromDevice', () => {
       currency: 'NGN',
       locale: 'en-NG',
       weekStart: 1,
+      username: null,
     });
   });
 });

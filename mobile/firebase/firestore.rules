@@ -1,0 +1,27 @@
+rules_version = '2';
+
+// Deploy with: firebase deploy --only firestore:rules
+// The app only writes; nothing can be read from a phone.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // One record per anonymous (or upgraded) user.
+    match /users/{uid} {
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['createdAt', 'platform', 'appVersion', 'locale', 'currency']);
+      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow read: if false;
+    }
+
+    // dailyActive/{YYYY-MM-DD}/users/{uid}: one document per user per day.
+    match /dailyActive/{day}/users/{uid} {
+      allow create: if request.auth != null && request.auth.uid == uid
+        && day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.keys().hasOnly(['at', 'platform']);
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

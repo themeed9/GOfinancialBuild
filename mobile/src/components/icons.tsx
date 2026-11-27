@@ -87,3 +87,21 @@ export function LogoMark({ color, size = 24 }: IconProps) {
     </Svg>
   );
 }
+
+export function EyeIcon({ color, size = 22, crossed = false }: IconProps & { crossed?: boolean }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" {...stroke(color)} />
+      <Circle cx="12" cy="12" r="3" {...stroke(color)} />
+      {crossed && <Path d="M4 4l16 16" {...stroke(color)} />}
+    </Svg>
+  );
+}
+
+export function BackIcon({ color, size = 24 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M15 5l-7 7 7 7" {...stroke(color)} strokeWidth={2.2} />
+    </Svg>
+  );
+}

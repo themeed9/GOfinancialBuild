@@ -106,6 +106,8 @@ export interface Settings {
   currency: string;
   locale: string;
   weekStart: WeekStart;
+  /** Display name chosen on first run; null until the username step is done */
+  username: string | null;
 }
 
 export async function loadSettings(db: Db, defaults: Settings): Promise<Settings> {
@@ -118,18 +120,38 @@ export async function loadSettings(db: Db, defaults: Settings): Promise<Settings
     weekStart: Number.isInteger(weekStart) && weekStart >= 0 && weekStart <= 6
       ? (weekStart as WeekStart)
       : defaults.weekStart,
+    username: stored.username ?? defaults.username,
   };
 }
 
 export async function saveSettings(db: Db, settings: Settings): Promise<void> {
   await db.withTransactionAsync(async () => {
     for (const [key, value] of Object.entries(settings)) {
+      if (value === null) {
+        await db.runAsync('DELETE FROM settings WHERE key = ?', [key]);
+        continue;
+      }
       await db.runAsync(
         'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
         [key, String(value)],
       );
     }
   });
+}
+
+// ── App metadata (not user preferences) ───────────────────────
+
+/** Small internal values, e.g. the last day the daily "app opened" event was sent. */
+export async function getMeta(db: Db, key: string): Promise<string | null> {
+  const row = await db.getFirstAsync<{ value: string }>('SELECT value FROM settings WHERE key = ?', [`meta.${key}`]);
+  return row?.value ?? null;
+}
+
+export async function setMeta(db: Db, key: string, value: string): Promise<void> {
+  await db.runAsync(
+    'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+    [`meta.${key}`, value],
+  );
 }
 
 // ── Delete everything ─────────────────────────────────────────

@@ -37,19 +37,24 @@ Lesson from V1: *building more is not the same as strengthening the product.* Pr
 | Daily total (dashboard) | Immediate awareness after each entry |
 | Weekly trend + recent transactions (dashboard) | The next layer of context, per the mockup |
 | History with edit/delete | Fix mistakes; required for trust |
-| Budget with carry-over (Insight tab) | Requested by the owner after V1 lost carried-over money. Optional, set from Insight, never part of first launch |
+| Username step (first run) | Owner decision: personal touch, and the moment an anonymous user is registered |
+| Budget step (first run, **skippable**) | Owner decision; Skip goes straight to the dashboard |
+| Budget with carry-over (Insight) | Requested by the owner after V1 lost carried-over money |
 | Monthly spending by category (Insight tab) | Categories exist so entries add up to context |
 | CSV export (Settings) | The only backup and route out while data is on-device |
 | Delete all data (Settings) | Clear ownership and deletion |
 
 ### Deferred until there's evidence they're needed
 
-Accounts/login/register/forgot password · username setup · onboarding screens (first launch goes straight to the dashboard; currency and language come from the device) · in-app language picker · theme setting (follow the system) · calendar view · printable HTML report · per-transaction currency switching or conversion · bank sync · AI guidance. Do not build these without the owner's go-ahead.
+Visible accounts/login (built but hidden — see below) · onboarding slides and language picker (currency and language come from the device) · theme setting (follow the system) · calendar view · printable HTML report · per-transaction currency switching or conversion · bank sync · AI guidance. Do not build these without the owner's go-ahead.
 
 ### Architecture assumptions (stated up front this time)
 
-- **One user, one device.** No accounts, no backend, no network calls. Data lives only in on-device SQLite.
-- **Ownership and deletion:** the user owns the data on their phone. "Delete all data" or uninstalling removes it. Nothing is collected, so the Play Store data-safety form can say no data is collected.
+- **One user, one device.** Transactions, budget and username live only in on-device SQLite.
+- **Anonymous registration (owner decision, Nov 2026):** finishing the username step creates an anonymous Firebase user and a `users/{uid}` record (platform, app version, locale, currency — no username, no money data). Once per local day the app writes `dailyActive/{YYYY-MM-DD}/users/{uid}` for daily-active counts. All calls are fire-and-forget and no-ops without config (`src/services/registration.ts`). Rules: `firebase/firestore.rules` (write-only from phones).
+- **Data safety form:** declare *App activity* and *Device or other IDs* (anonymous user id), collected for analytics, not shared, deletable.
+- **Ownership and deletion:** "Delete all data" wipes the phone and deletes the anonymous account and its record.
+- **Email accounts are built but hidden** (`FEATURES.emailAccounts` in `src/config/features.ts`). Creating an account upgrades the anonymous user in place, so counts carry over. Firebase sends a password-reset *link*, not the OTP shown in the V2 design. "Continue with Google" needs native Google sign-in setup first.
 - **Recovery:** CSV export only. Losing the phone loses unexported data; the app must say so plainly near the export.
 - **Before any cloud sync or wider multi-device use:** design real authentication, record ownership, user isolation, recovery, sync conflicts and server-side deletion first. That is a separate project.
 

@@ -4,6 +4,8 @@ import { addBudgetPlan } from '../core/budget/plans';
 import { migrate, SCHEMA_VERSION } from '../data/db';
 import {
   deleteAllData,
+  getMeta,
+  setMeta,
   listBudgetPlans,
   listTransactions,
   loadSettings,
@@ -16,7 +18,7 @@ import {
 import { at, tx } from './helpers';
 import { createTestDb } from './nodeDb';
 
-const DEFAULTS: Settings = { currency: 'NGN', locale: 'en-NG', weekStart: 1 };
+const DEFAULTS: Settings = { currency: 'NGN', locale: 'en-NG', weekStart: 1, username: null };
 
 describe('repository (SQLite)', () => {
   let db: ReturnType<typeof createTestDb>;
@@ -88,8 +90,10 @@ describe('repository (SQLite)', () => {
 
   it('falls back to defaults and persists settings', async () => {
     expect(await loadSettings(db, DEFAULTS)).toEqual(DEFAULTS);
-    await saveSettings(db, { currency: 'GHS', locale: 'en-GH', weekStart: 0 });
-    expect(await loadSettings(db, DEFAULTS)).toEqual({ currency: 'GHS', locale: 'en-GH', weekStart: 0 });
+    await saveSettings(db, { currency: 'GHS', locale: 'en-GH', weekStart: 0, username: 'meed' });
+    expect(await loadSettings(db, DEFAULTS)).toEqual({ currency: 'GHS', locale: 'en-GH', weekStart: 0, username: 'meed' });
+    await saveSettings(db, { currency: 'GHS', locale: 'en-GH', weekStart: 0, username: null });
+    expect((await loadSettings(db, DEFAULTS)).username).toBeNull();
   });
 
   it('ignores an invalid stored week start', async () => {
@@ -108,5 +112,17 @@ describe('repository (SQLite)', () => {
     expect(await count('transactions')).toBe(0);
     expect(await count('budget_plans')).toBe(0);
     expect(await count('settings')).toBe(0);
+  });
+});
+
+describe('app metadata', () => {
+  it('stores internal values separately from user settings', async () => {
+    const db = createTestDb();
+    await migrate(db);
+    expect(await getMeta(db, 'lastDailyOpen')).toBeNull();
+    await setMeta(db, 'lastDailyOpen', '2026-11-27');
+    expect(await getMeta(db, 'lastDailyOpen')).toBe('2026-11-27');
+    expect(await loadSettings(db, DEFAULTS)).toEqual(DEFAULTS);
+    db.close();
   });
 });

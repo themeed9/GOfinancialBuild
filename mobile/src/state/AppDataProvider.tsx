@@ -2,6 +2,7 @@ import * as Crypto from 'expo-crypto';
 import { getCalendars, getLocales } from 'expo-localization';
 import { useSQLiteContext } from 'expo-sqlite';
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useReducer, useRef, type ReactNode } from 'react';
+import { AppState } from 'react-native';
 
 import { addBudgetPlan } from '@/core/budget/plans';
 import type { PeriodKind } from '@/core/dates';
@@ -9,6 +10,7 @@ import type { Transaction } from '@/core/types';
 import type { Db } from '@/data/db';
 import { settingsFromDevice } from '@/data/defaults';
 import * as repo from '@/data/repository';
+import { forgetRegistration, registerAnonymously, reportDailyOpen } from '@/services/registration';
 import { appDataReducer, type AppData } from './appDataReducer';
 
 export interface NewTransaction {
@@ -23,8 +25,12 @@ interface AppDataContextValue extends AppData {
   deleteTransaction(id: string): Promise<void>;
   setBudget(amountMinor: number, period: PeriodKind): Promise<void>;
   updateSettings(patch: Partial<repo.Settings>): Promise<void>;
+  /** Saves the username and quietly registers an anonymous user. */
+  completeUsername(username: string): Promise<void>;
   deleteAllData(): Promise<void>;
 }
+
+const LAST_DAILY_OPEN = 'lastDailyOpen';
 
 const AppDataContext = createContext<AppDataContextValue | null>(null);
 
@@ -155,14 +161,44 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     [db],
   );
 
+  // Daily active usage: once per local day, on launch and when the app returns to the foreground.
+  const reportOpen = useCallback(async () => {
+    const last = await repo.getMeta(db, LAST_DAILY_OPEN);
+    const reported = await reportDailyOpen(last, Date.now());
+    if (reported) await repo.setMeta(db, LAST_DAILY_OPEN, reported);
+  }, [db]);
+
+  const registered = state.status === 'ready' && state.settings.username !== null;
+  useEffect(() => {
+    if (!registered) return;
+    reportOpen().catch(() => undefined);
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') reportOpen().catch(() => undefined);
+    });
+    return () => sub.remove();
+  }, [registered, reportOpen]);
+
+  const completeUsername = useCallback(
+    async (username: string) => {
+      await updateSettings({ username });
+      const { locale, currency } = stateRef.current.settings;
+      // Fire and forget: never block the user on the network.
+      registerAnonymously({ locale, currency })
+        .then((uid) => (uid ? reportOpen() : undefined))
+        .catch(() => undefined);
+    },
+    [updateSettings, reportOpen],
+  );
+
   const deleteAllData = useCallback(async () => {
     await repo.deleteAllData(db);
     dispatch({ type: 'cleared', settings: defaults });
+    forgetRegistration().catch(() => undefined);
   }, [db, defaults]);
 
   const value = useMemo(
-    () => ({ ...state, addTransaction, updateTransaction, deleteTransaction, setBudget, updateSettings, deleteAllData }),
-    [state, addTransaction, updateTransaction, deleteTransaction, setBudget, updateSettings, deleteAllData],
+    () => ({ ...state, addTransaction, updateTransaction, deleteTransaction, setBudget, updateSettings, completeUsername, deleteAllData }),
+    [state, addTransaction, updateTransaction, deleteTransaction, setBudget, updateSettings, completeUsername, deleteAllData],
   );
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;
