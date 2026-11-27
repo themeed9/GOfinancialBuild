@@ -12,6 +12,10 @@ npx expo start
 
 Then press `a` to open an Android emulator, or scan the QR code with the Expo Go app on your phone.
 
+## Try it on iPhone (web preview)
+
+Every push to `main` publishes the app to **https://themeed9.github.io/GOfinancialBuild/** (workflow `web-preview.yml`). Open it in Safari and use **Share → Add to Home Screen** to launch it like an app. Entries are saved in that browser only. One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
+
 ## Checks
 
 ```bash
