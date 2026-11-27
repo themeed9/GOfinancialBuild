@@ -16,6 +16,10 @@ Then press `a` to open an Android emulator, or scan the QR code with the Expo Go
 
 Every push to `main` publishes the app to **https://themeed9.github.io/GOfinancialBuild/** (workflow `web-preview.yml`). Open it in Safari and use **Share → Add to Home Screen** to launch it like an app. Entries are saved in that browser only. One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
 
+### Vercel (alternative host)
+
+`vercel.json` is ready. In Vercel: **Add New → Project → import GOfinancialBuild**, set **Root Directory** to `mobile`, keep the settings from `vercel.json`, add the `EXPO_PUBLIC_FIREBASE_*` values under Environment Variables if you have them, and **Deploy**. Every push to `main` then redeploys.
+
 ## Checks
 
 ```bash
