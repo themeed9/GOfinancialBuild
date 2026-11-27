@@ -15,68 +15,68 @@ interface SlideData {
 const SLIDES: Record<string, SlideData[]> = {
   en: [
     {
-      image: '/images/onboarding-1.svg',
+      image: '/images/onboarding-1.jpg',
       title: 'Log expenses in seconds',
       description: 'Open, add, done. No forms, no friction. Track every spend before you even think about it.',
     },
     {
-      image: '/images/onboarding-2.svg',
+      image: '/images/onboarding-2.jpg',
       title: 'See where your money goes',
       description: 'Daily totals, clear history, and simple insights. Know your habits without the headache.',
     },
     {
-      image: '/images/onboarding-3.svg',
+      image: '/images/onboarding-3.jpg',
       title: 'Your money, your rules',
       description: 'Any currency, any language. Works offline, stays private. This is your money, your way.',
     },
   ],
   es: [
     {
-      image: '/images/onboarding-1.svg',
+      image: '/images/onboarding-1.jpg',
       title: 'Registra gastos en segundos',
       description: 'Abre, agrega, listo. Sin formularios, sin fricción. Registra cada gasto antes de pensarlo.',
     },
     {
-      image: '/images/onboarding-2.svg',
+      image: '/images/onboarding-2.jpg',
       title: 'Mira a dónde va tu dinero',
       description: 'Totales diarios, historial claro e ideas simples. Conoce tus hábitos sin complicaciones.',
     },
     {
-      image: '/images/onboarding-3.svg',
+      image: '/images/onboarding-3.jpg',
       title: 'Tu dinero, tus reglas',
       description: 'Cualquier moneda, cualquier idioma. Funciona sin conexión, se mantiene privado. Tu dinero, a tu manera.',
     },
   ],
   ar: [
     {
-      image: '/images/onboarding-1.svg',
+      image: '/images/onboarding-1.jpg',
       title: 'سجّل النفقات في ثوانٍ',
       description: 'افتح، أضف، انتهى. بلا نماذج، بلا تعقيد. تتبع كل إنفاق قبل حتى أن تفكر فيه.',
     },
     {
-      image: '/images/onboarding-2.svg',
+      image: '/images/onboarding-2.jpg',
       title: 'شاهد أين تذهب أموالك',
       description: 'مجاميع يومية، سجل واضح، ورؤى بسيطة. تعرّف على عاداتك دون صداع.',
     },
     {
-      image: '/images/onboarding-3.svg',
+      image: '/images/onboarding-3.jpg',
       title: 'أموالك، قواعدك',
       description: 'أي عملة، أي لغة. يعمل بلا إنترنت، ويبقى خاصاً. أموالك بطريقتك.',
     },
   ],
   fr: [
     {
-      image: '/images/onboarding-1.svg',
+      image: '/images/onboarding-1.jpg',
       title: 'Notez vos dépenses en secondes',
       description: 'Ouvrez, ajoutez, terminé. Pas de formulaires, pas de friction. Suivez chaque dépense en un instant.',
     },
     {
-      image: '/images/onboarding-2.svg',
+      image: '/images/onboarding-2.jpg',
       title: 'Voyez où va votre argent',
       description: 'Totaux quotidiens, historique clair et idées simples. Connaissez vos habitudes sans prise de tête.',
     },
     {
-      image: '/images/onboarding-3.svg',
+      image: '/images/onboarding-3.jpg',
       title: 'Votre argent, vos règles',
       description: 'N\'importe quelle devise, n\'importe quelle langue. Fonctionne hors ligne, reste privé. Votre argent, à votre façon.',
     },
