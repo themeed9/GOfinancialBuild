@@ -1,0 +1,49 @@
+# GOfinancial — mobile app
+
+The Android (and later iOS) version of GOfinancial, built with React Native and Expo. The web app in the repository root keeps working as it is.
+
+## Run it
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+Then press `a` to open an Android emulator, or scan the QR code with the Expo Go app on your phone.
+
+## Checks
+
+```bash
+npm run typecheck   # TypeScript
+npx expo lint       # ESLint
+npm run test:run    # Vitest (core logic)
+```
+
+## How the budget works
+
+The budget is a running account, not a counter that resets every week:
+
+- Each week (or month), your budget amount is added to the account.
+- Each expense is taken out of it.
+- Whatever is left over, or overspent, carries into the next week.
+
+So the dashboard can show both "this week: ₦10,000 + ₦4,000 carried over" and your overall balance. Changing the budget only affects the current period onwards; past weeks keep the amount that applied then. The logic is in `src/core/budget/` and covered by `src/__tests__/ledger.test.ts`.
+
+## Design tokens
+
+Colours, type and spacing come from `../tokens`, shared with the web app. After editing them:
+
+```bash
+npm run generate-theme
+```
+
+## Releasing
+
+Builds are made in the cloud with EAS (no Android Studio or Mac needed):
+
+```bash
+npx eas-cli@latest build --platform android
+```
+
+Before the first Play Store release, replace the placeholder icon and splash images in `assets/images/`, and confirm the app ID `app.gofinancial` in `app.json`. It cannot be changed after the app is published.

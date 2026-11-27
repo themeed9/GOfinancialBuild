@@ -37,3 +37,37 @@ jobs:
 
     - name: Build
       run: npm run build
+
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: mobile/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Theme is in sync with ../tokens
+      run: npm run generate-theme && git diff --exit-code src/theme
+
+    - name: Type check
+      run: npm run typecheck
+
+    - name: Lint
+      run: npx expo lint
+
+    - name: Run tests
+      run: npm run test:run
+
+    - name: Bundle Android
+      run: npx expo export --platform android --output-dir /tmp/android-bundle
